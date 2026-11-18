@@ -399,7 +399,7 @@
         <button id="btn-generate-story" type="button"
           class="group relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold text-slate-950 bg-gradient-to-r from-emerald-200 via-amber-200 to-emerald-300 hover:from-emerald-100 hover:to-amber-100 shadow-[0_10px_40px_rgba(110,231,183,0.35)] transition-all duration-300 active:scale-[0.98]">
           <i class="fa-solid fa-book-open-reader text-slate-900 transition-transform group-hover:scale-110"></i>
-          <span>物語を紡ぐ（全5ページ生成）</span>
+          <span>物語を紡ぐ（ChatGPT用プロンプトを作成）</span>
         </button>
         <div class="mt-4">
           <button id="btn-open-cg" type="button"
@@ -1014,6 +1014,33 @@
       // 選んだ舞台を学習し、今回の設定を自動保存する
       learnStages(stages);
       saveLastSettings();
+
+      // 公開版はAPIキーなし運用のため、アプリ内生成は行わず ChatGPT 用の物語プロンプトを提示する
+      const storyPrompt = [
+        'あなたは繊細で情景描写に優れた日本の恋愛小説家です。以下の設定をもとに、全5ページ構成の短編恋愛小説を執筆してください。',
+        '',
+        '【ルール】',
+        '1. 必ず全5ページで構成し、各ページに短い副題を付けること。',
+        '2. 各ページの文章量は日本語で320〜420文字程度に統一し、適度に改行を入れて読みやすくすること。',
+        '3. 「思い出のセリフ」がある場合は、すべて物語の中に自然に織り込むこと。',
+        '4. 5ページ目の最後の行は、必ず一言一句違わず「この世界観を歌にしますか？」で締めること。',
+        '5. 冒頭に小説のタイトルを1行で示すこと。',
+        '',
+        '【設定】',
+        `- 女性主人公：${femaleName}／男性主人公：${maleName}`,
+        `- 舞台：${stages.length > 0 ? stages.join('、') : '静かな街角'}`,
+        `- 季節：${season}／二人の関係：${relation}`,
+        `- 感情：${emotions.length > 0 ? emotions.join('、') : '切なさ、温もり'}／結末：${ending}`,
+        quotes.length > 0 ? `- 思い出のセリフ：\n${quotes.map((q, i) => `  ${i + 1}. ${q}`).join('\n')}` : '- 思い出のセリフ：指定なし（二人の関係性に合った印象的なセリフを創作してください）',
+        extraNotes ? `- 追加設定：${extraNotes}` : '- 追加設定：特になし'
+      ].join('\n');
+
+      els.chatgptSection.classList.remove('hidden');
+      els.cgPromptOutput.value = storyPrompt;
+      els.cgOutputWrap.classList.remove('hidden');
+      els.chatgptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast('公開版では物語はChatGPTで作ります。プロンプトを用意したので、コピーしてChatGPTに貼ってください');
+      return;
 
       // UI切り替え（ローディング表示）
       els.setupSection.classList.add('hidden');
