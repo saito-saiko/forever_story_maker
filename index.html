@@ -383,7 +383,7 @@
         </button>
         <div class="mt-4">
           <button id="btn-open-cg" type="button"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-emerald-200 border border-emerald-300/25 transition">
+            class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold bg-white/5 hover:bg-white/10 text-emerald-200 border border-emerald-300/25 shadow-[0_10px_40px_rgba(0,0,0,0.25)] transition-all duration-300 active:scale-[0.98]">
             <i class="fa-solid fa-comments"></i>
             <span>物語なしで、曲作りプロンプトだけ作る</span>
           </button>
@@ -636,6 +636,7 @@
 
         <!-- こだわり入力欄 -->
         <div id="cg-custom-fields" class="hidden space-y-4 mb-5">
+          <p class="text-xs text-slate-400 leading-relaxed">空欄にすれば「おまかせ」になります。</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label for="cg-instruments" class="block text-xs font-medium text-slate-300 mb-2">楽器</label>
