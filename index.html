@@ -137,9 +137,9 @@
     </svg>
   </div>
 
-  <!-- 見習い魔法使いの少女（右下に在中） -->
-  <div class="fixed bottom-3 right-3 sm:bottom-5 sm:right-6 pointer-events-none z-10 animate-float" aria-hidden="true">
-    <img src="apprentice_witch.webp" alt="" class="w-[104px] sm:w-[148px] h-auto rounded-3xl border border-emerald-200/40 shadow-[0_10px_36px_rgba(0,0,0,0.5)]" />
+  <!-- 青髪少女（左下に出現。曲作りのときは魔法帽をかぶる） -->
+  <div class="fixed bottom-3 left-3 sm:bottom-5 sm:left-6 pointer-events-none z-10 animate-float" aria-hidden="true">
+    <img id="girl-img" src="apprentice_witch.webp" alt="" class="w-[104px] sm:w-[148px] h-auto rounded-3xl border border-emerald-200/40 shadow-[0_10px_36px_rgba(0,0,0,0.5)]" />
   </div>
 
   <!-- トースト通知（alertの代替） -->
@@ -806,6 +806,7 @@
       cgPromptOutput: document.getElementById('cg-prompt-output'),
       btnCopyCgPrompt: document.getElementById('btn-copy-cg-prompt'),
 
+      girlImg: document.getElementById('girl-img'),
       storyPromptSection: document.getElementById('story-prompt-section'),
       storyPromptOutput: document.getElementById('story-prompt-output'),
       btnCopyStoryPrompt: document.getElementById('btn-copy-story-prompt')
@@ -1516,13 +1517,17 @@ ${extraNotes || '特になし'}`;
           els.cgCustomFields.classList.toggle('hidden', currentCgMode() !== 'custom');
         });
       });
+      // 曲作りのときは、左下の少女が魔法帽をかぶる
+      const wearMagicHat = () => { if (els.girlImg) els.girlImg.src = 'apprentice_witch_hat.webp'; };
       els.btnOpenCg.addEventListener('click', () => {
         els.chatgptSection.classList.remove('hidden');
+        wearMagicHat();
         els.chatgptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
       els.btnBuildCgPrompt.addEventListener('click', () => {
         els.cgPromptOutput.value = buildChatGptPrompt();
         els.cgOutputWrap.classList.remove('hidden');
+        wearMagicHat();
         showToast('ChatGPT用プロンプトを作成しました');
       });
       els.btnCopyCgPrompt.addEventListener('click', () => {
