@@ -254,6 +254,8 @@
               </select>
               <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
             </div>
+            <input id="season-note" type="text" placeholder="自由に書き足し（例：晩秋、初雪の降る夜）"
+              class="glass-input w-full rounded-2xl px-4 py-2.5 mt-2.5 text-sm text-white placeholder-slate-500" />
           </div>
 
           <div>
@@ -383,7 +385,7 @@
           <button id="btn-open-cg" type="button"
             class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-emerald-200 border border-emerald-300/25 transition">
             <i class="fa-solid fa-comments"></i>
-            <span>物語なしで、ChatGPT用プロンプトだけ作る</span>
+            <span>物語なしで、曲作りプロンプトだけ作る</span>
           </button>
         </div>
       </div>
@@ -568,6 +570,37 @@
     </section>
 
     <!-- ==========================================
+         セクション3.5: 物語作成プロンプト（ChatGPT用）
+         ========================================== -->
+    <section id="story-prompt-section" class="hidden mt-10 space-y-6 animate-fade-in">
+      <div class="text-center">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-300/10 border border-emerald-300/30 text-xs text-emerald-200 tracking-wider mb-2">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Story Prompt for ChatGPT</span>
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
+          物語作成プロンプト
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl mx-auto leading-relaxed">
+          物語は ChatGPT に書いてもらいます。下のプロンプトをコピーして、ChatGPTに貼ってください。物語ができたら、下の「曲作りプロンプト」で歌にできます。
+        </p>
+      </div>
+
+      <div class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <span class="text-xs text-emerald-300 tracking-widest uppercase">Prompt for ChatGPT</span>
+          <button id="btn-copy-story-prompt" type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border border-emerald-300/35 transition active:scale-95">
+            <i class="fa-regular fa-copy"></i>
+            <span>プロンプトをコピー</span>
+          </button>
+        </div>
+        <textarea id="story-prompt-output" rows="14" readonly
+          class="glass-input w-full rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-100 leading-relaxed"></textarea>
+      </div>
+    </section>
+
+    <!-- ==========================================
          セクション4: ChatGPT用 曲作りプロンプト
          ========================================== -->
     <section id="chatgpt-section" class="hidden mt-10 space-y-6 animate-fade-in">
@@ -714,6 +747,7 @@
       customStageInput: document.getElementById('custom-stage-input'),
       btnAddStage: document.getElementById('btn-add-stage'),
       seasonSelect: document.getElementById('season-select'),
+      seasonNote: document.getElementById('season-note'),
       relationInput: document.getElementById('relation-input'),
       emotionChips: document.getElementById('emotion-chips'),
       endingSelect: document.getElementById('ending-select'),
@@ -770,7 +804,11 @@
       btnBuildCgPrompt: document.getElementById('btn-build-cg-prompt'),
       cgOutputWrap: document.getElementById('cg-output-wrap'),
       cgPromptOutput: document.getElementById('cg-prompt-output'),
-      btnCopyCgPrompt: document.getElementById('btn-copy-cg-prompt')
+      btnCopyCgPrompt: document.getElementById('btn-copy-cg-prompt'),
+
+      storyPromptSection: document.getElementById('story-prompt-section'),
+      storyPromptOutput: document.getElementById('story-prompt-output'),
+      btnCopyStoryPrompt: document.getElementById('btn-copy-story-prompt')
     };
 
     // ------------------------------------------
@@ -927,6 +965,7 @@
       state.selectedStages.clear();
       renderStageChips();
       els.seasonSelect.value = '夏';
+      els.seasonNote.value = '';
       els.relationInput.value = '';
       state.selectedEmotions.clear();
       renderEmotionChips();
@@ -980,7 +1019,8 @@
       const femaleName = els.femaleName.value.trim() || '美咲';
       const maleName = els.maleName.value.trim() || '蓮';
       const stages = Array.from(state.selectedStages);
-      const season = els.seasonSelect.value;
+      const seasonNote = els.seasonNote.value.trim();
+      const season = seasonNote ? `${els.seasonSelect.value}（${seasonNote}）` : els.seasonSelect.value;
       const relation = els.relationInput.value.trim() || '運命に導かれた二人';
       const emotions = Array.from(state.selectedEmotions);
       const ending = els.endingSelect.value;
@@ -1013,11 +1053,10 @@
         extraNotes ? `- 追加設定：${extraNotes}` : '- 追加設定：特になし'
       ].join('\n');
 
-      els.chatgptSection.classList.remove('hidden');
-      els.cgPromptOutput.value = storyPrompt;
-      els.cgOutputWrap.classList.remove('hidden');
-      els.chatgptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      showToast('公開版では物語はChatGPTで作ります。プロンプトを用意したので、コピーしてChatGPTに貼ってください');
+      els.storyPromptSection.classList.remove('hidden');
+      els.storyPromptOutput.value = storyPrompt;
+      els.storyPromptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast('物語作成プロンプトを用意しました。コピーしてChatGPTに貼ってください');
       return;
 
       // UI切り替え（ローディング表示）
@@ -1294,6 +1333,7 @@ ${extraNotes || '特になし'}`;
         maleName: els.maleName.value,
         stages: Array.from(state.selectedStages),
         season: els.seasonSelect.value,
+        seasonNote: els.seasonNote.value,
         relation: els.relationInput.value,
         emotions: Array.from(state.selectedEmotions),
         ending: els.endingSelect.value,
@@ -1309,6 +1349,7 @@ ${extraNotes || '特になし'}`;
       state.selectedStages = new Set(data.stages || []);
       renderStageChips();
       if (data.season) els.seasonSelect.value = data.season;
+      els.seasonNote.value = data.seasonNote || '';
       els.relationInput.value = data.relation || '';
       state.selectedEmotions = new Set(data.emotions || []);
       renderEmotionChips();
@@ -1418,7 +1459,7 @@ ${extraNotes || '特になし'}`;
       lines.push('【物語の設定】');
       lines.push(`- 女性主人公：${s.femaleName || '美咲'}／男性主人公：${s.maleName || '蓮'}`);
       lines.push(`- 舞台：${s.stages.length ? s.stages.join('、') : '静かな街角'}`);
-      lines.push(`- 季節：${s.season}／二人の関係：${s.relation || '運命に導かれた二人'}`);
+      lines.push(`- 季節：${s.seasonNote ? `${s.season}（${s.seasonNote}）` : s.season}／二人の関係：${s.relation || '運命に導かれた二人'}`);
       lines.push(`- 感情：${s.emotions.length ? s.emotions.join('、') : '切なさ、温もり'}／結末：${s.ending}`);
       const quotes = s.quotes.filter(q => q && q.trim());
       if (quotes.length) lines.push(`- 思い出のセリフ：${quotes.join(' ／ ')}`);
@@ -1487,6 +1528,10 @@ ${extraNotes || '特になし'}`;
       els.btnCopyCgPrompt.addEventListener('click', () => {
         if (!els.cgPromptOutput.value) return;
         copyTextToClipboard(els.cgPromptOutput.value, 'ChatGPT用プロンプトをコピーしました');
+      });
+      els.btnCopyStoryPrompt.addEventListener('click', () => {
+        if (!els.storyPromptOutput.value) return;
+        copyTextToClipboard(els.storyPromptOutput.value, '物語作成プロンプトをコピーしました');
       });
 
       // 自由な舞台追加
