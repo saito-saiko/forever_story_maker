@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forever Story Maker V3 — Memories become a story. A story becomes a song.</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cormorant Garamond, Shippori Mincho, Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+            serif: ['"Shippori Mincho"', 'serif'],
+            display: ['"Cormorant Garamond"', '"Shippori Mincho"', 'serif'],
+          },
+          colors: {
+            midnight: '#06120d',
+            twilight: '#0d241b',
+            dusk: '#173a2a',
+            roseGlow: '#8fd8b6',
+            amberStar: '#f5d08a',
+          },
+          animation: {
+            'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 8s ease-in-out infinite',
+            'fade-in': 'fadeIn 0.6s ease-out forwards',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* カスタムスクロールバーとグラスモーフィズム補助 */
+    body {
+      background: radial-gradient(ellipse at top, #123528 0%, #0a2018 50%, #05120d 100%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: rgba(14, 34, 26, 0.58);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .glass-input {
+      background: rgba(7, 22, 16, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      transition: all 0.25s ease;
+    }
+    .glass-input:focus {
+      outline: none;
+      border-color: #8fd8b6;
+      box-shadow: 0 0 0 3px rgba(110, 231, 183, 0.18);
+      background: rgba(9, 28, 20, 0.85);
+    }
+
+    .book-paper {
+      background: linear-gradient(145deg, rgba(18, 42, 32, 0.88), rgba(8, 24, 18, 0.94));
+      border: 1px solid rgba(245, 208, 138, 0.22);
+      box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    /* 星空の微細なパーティクル背景 */
+    .stars-bg {
+      background-image:
+        radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.6) 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 72% 18%, rgba(245,208,138,0.7) 50%, transparent 100%),
+        radial-gradient(1px 1px at 84% 62%, rgba(110,231,183,0.6) 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 32% 78%, rgba(255,255,255,0.5) 50%, transparent 100%),
+        radial-gradient(1px 1px at 55% 42%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      background-size: 550px 550px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(9, 11, 22, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(110, 231, 183, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(110, 231, 183, 0.6);
+    }
+  </style>
+</head>
+<body class="stars-bg antialiased selection:bg-emerald-400/30 selection:text-emerald-100">
+
+  <!-- 背景の幻想的なオーブ装飾 -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute -top-32 -left-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-[120px] animate-pulse-slow"></div>
+    <div class="absolute top-1/3 -right-32 w-[28rem] h-[28rem] bg-teal-500/15 rounded-full blur-[130px] animate-float"></div>
+    <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-amber-400/10 rounded-full blur-[120px]"></div>
+  </div>
+
+  <!-- 月（右上にさりげなく） -->
+  <div class="fixed top-5 right-5 sm:top-8 sm:right-10 pointer-events-none z-0 opacity-90" aria-hidden="true">
+    <svg width="54" height="54" viewBox="0 0 100 100" class="drop-shadow-[0_0_18px_rgba(245,208,138,0.45)]">
+      <defs>
+        <mask id="moon-cut">
+          <rect width="100" height="100" fill="white"/>
+          <circle cx="66" cy="38" r="34" fill="black"/>
+        </mask>
+      </defs>
+      <circle cx="48" cy="52" r="36" fill="#f5d08a" mask="url(#moon-cut)"/>
+      <circle cx="88" cy="20" r="1.8" fill="#ffffff" opacity="0.8"/>
+      <circle cx="14" cy="16" r="1.4" fill="#ffffff" opacity="0.6"/>
+      <circle cx="94" cy="58" r="1.3" fill="#ffffff" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <!-- 青髪少女（左下に出現。曲作りのときは魔法帽をかぶる） -->
+  <div class="fixed bottom-3 left-3 sm:bottom-5 sm:left-6 pointer-events-none z-10 animate-float" aria-hidden="true">
+    <img id="girl-img" src="apprentice_witch.webp" alt="" class="w-[104px] sm:w-[148px] h-auto rounded-3xl border border-emerald-200/40 shadow-[0_10px_36px_rgba(0,0,0,0.5)]" />
+  </div>
+
+  <!-- トースト通知（alertの代替） -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- メインコンテナ -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <!-- ヘッダー -->
+    <header class="text-center mb-10 sm:mb-12 animate-fade-in">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs tracking-widest text-amber-200/90 uppercase mb-4">
+        <i class="fa-solid fa-feather-pointed text-emerald-300"></i>
+        <span>Interactive Romance &amp; Song Studio · V3</span>
+      </div>
+      <h1 class="font-display text-4xl sm:text-6xl font-semibold tracking-wide bg-gradient-to-r from-emerald-200 via-amber-100 to-teal-200 bg-clip-text text-transparent drop-shadow-sm">
+        Forever Story Maker
+      </h1>
+      <p class="font-display italic text-lg sm:text-xl text-slate-300/90 mt-2 tracking-wider">
+        Memories become a story. A story becomes a song.
+      </p>
+      <p class="text-xs sm:text-sm text-slate-400 mt-3 max-w-xl mx-auto leading-relaxed">
+        心に残る風景や忘れられない言葉を紡ぎ、全5ページの恋愛小説へ。<br class="hidden sm:inline" />
+        そして物語の余韻から、世界にひとつだけの楽曲とSUNOプロンプトを生み出します。
+      </p>
+
+      <!-- クイックアクションバー -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <button id="btn-fill-sample" type="button"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium bg-white/10 hover:bg-white/15 text-amber-200 border border-amber-300/30 transition shadow-sm active:scale-95">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>サンプル設定を入力</span>
+        </button>
+        <button id="btn-reset-form" type="button"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition active:scale-95">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span>入力をクリア</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         セクション1: 設定入力フォーム
+         ========================================== -->
+    <main id="setup-section" class="space-y-6 sm:space-y-8 animate-fade-in">
+
+      <!-- 01｜主人公 -->
+      <section class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="font-display text-2xl font-semibold text-emerald-300">01</span>
+          <span class="h-4 w-px bg-white/20"></span>
+          <h2 class="font-serif text-lg sm:text-xl font-semibold text-white tracking-wide">主人公</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label for="female-name" class="block text-xs font-medium text-emerald-200/90 mb-2">
+              <i class="fa-solid fa-venus mr-1.5 text-emerald-300"></i>女性主人公の名前
+            </label>
+            <input id="female-name" type="text" placeholder="例：美咲"
+              class="glass-input w-full rounded-2xl px-4 py-3 text-sm sm:text-base text-white placeholder-slate-500" />
+          </div>
+          <div>
+            <label for="male-name" class="block text-xs font-medium text-teal-200/90 mb-2">
+              <i class="fa-solid fa-mars mr-1.5 text-teal-300"></i>男性主人公の名前
+            </label>
+            <input id="male-name" type="text" placeholder="例：蓮"
+              class="glass-input w-full rounded-2xl px-4 py-3 text-sm sm:text-base text-white placeholder-slate-500" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 02｜二人の世界 -->
+      <section class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="font-display text-2xl font-semibold text-emerald-300">02</span>
+          <span class="h-4 w-px bg-white/20"></span>
+          <h2 class="font-serif text-lg sm:text-xl font-semibold text-white tracking-wide">二人の世界</h2>
+        </div>
+
+        <!-- 舞台（複数選択＋自由入力追加） -->
+        <div class="mb-6">
+          <label class="block text-xs font-medium text-slate-300 mb-2.5">
+            舞台 <span class="text-slate-400 font-normal">（複数選択可・自由に追加できます）</span>
+          </label>
+          <div id="stage-chips" class="flex flex-wrap gap-2 mb-3">
+            <!-- JSでチップ生成 -->
+          </div>
+          <div class="flex gap-2">
+            <input id="custom-stage-input" type="text" placeholder="自由な舞台を追加（例：夜行バスの窓際、雨上がりの歩道橋）"
+              class="glass-input flex-1 rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+            <button id="btn-add-stage" type="button"
+              class="px-4 py-2.5 rounded-2xl bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-200 border border-emerald-300/30 text-xs sm:text-sm font-medium transition shrink-0">
+              <i class="fa-solid fa-plus mr-1"></i>追加
+            </button>
+          </div>
+          <div class="mt-3 text-right">
+            <button id="btn-clear-stages" type="button"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 border border-white/10 transition active:scale-95">
+              <i class="fa-solid fa-eraser text-[10px]"></i>舞台の選択をクリア
+            </button>
+          </div>
+        </div>
+
+        <!-- 季節 ＆ 二人の関係 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label for="season-select" class="block text-xs font-medium text-slate-300 mb-2">
+              季節
+            </label>
+            <div class="relative">
+              <select id="season-select"
+                class="glass-input w-full appearance-none rounded-2xl px-4 py-3 text-sm text-white pr-10 cursor-pointer">
+                <option value="春" class="bg-slate-900">春（桜舞う始まりの季節）</option>
+                <option value="夏" class="bg-slate-900" selected>夏（夜風と花火の季節）</option>
+                <option value="秋" class="bg-slate-900">秋（金木犀と黄昏の季節）</option>
+                <option value="冬" class="bg-slate-900">冬（白い息とイルミネーション）</option>
+                <option value="季節の狭間" class="bg-slate-900">季節の狭間（移ろいゆく時間）</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+            </div>
+            <input id="season-note" type="text" placeholder="自由に書き足し（例：晩秋、初雪の降る夜）"
+              class="glass-input w-full rounded-2xl px-4 py-2.5 mt-2.5 text-sm text-white placeholder-slate-500" />
+          </div>
+
+          <div>
+            <label for="relation-input" class="block text-xs font-medium text-slate-300 mb-2">
+              二人の関係 <span class="text-slate-400 font-normal">（選択または自由入力）</span>
+            </label>
+            <input id="relation-input" list="relation-presets" type="text" placeholder="選択または自由に入力"
+              value="すれ違う元恋人"
+              class="glass-input w-full rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500" />
+            <datalist id="relation-presets">
+              <option value="幼馴染"></option>
+              <option value="会社の同僚"></option>
+              <option value="秘密の恋人"></option>
+              <option value="すれ違う元恋人"></option>
+              <option value="図書室で出会った二人"></option>
+              <option value="バンド仲間"></option>
+              <option value="遠距離恋愛中の二人"></option>
+              <option value="終電でよく会う見知らぬ同士"></option>
+            </datalist>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03｜心に流れる感情 -->
+      <section class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="font-display text-2xl font-semibold text-emerald-300">03</span>
+          <span class="h-4 w-px bg-white/20"></span>
+          <h2 class="font-serif text-lg sm:text-xl font-semibold text-white tracking-wide">心に流れる感情</h2>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-xs font-medium text-slate-300 mb-2.5">
+            物語の感情 <span class="text-slate-400 font-normal">（複数選択可）</span>
+          </label>
+          <div id="emotion-chips" class="flex flex-wrap gap-2">
+            <!-- JSでチップ生成 -->
+          </div>
+        </div>
+
+        <div>
+          <label for="ending-select" class="block text-xs font-medium text-slate-300 mb-2">
+            物語の結末
+          </label>
+          <div class="relative">
+            <select id="ending-select"
+              class="glass-input w-full appearance-none rounded-2xl px-4 py-3 text-sm text-white pr-10 cursor-pointer">
+              <option value="ハッピーエンド" class="bg-slate-900">ハッピーエンド（想いが通じ合い、未来へ歩み出す）</option>
+              <option value="ビタースイート" class="bg-slate-900" selected>ビタースイート（ほろ苦さと温もりが共存する結末）</option>
+              <option value="再会の予感" class="bg-slate-900">再会の予感（一度離れても、再び巡り会う希望）</option>
+              <option value="静かな別れ" class="bg-slate-900">静かな別れ（感謝と愛しさを胸にそれぞれの道へ）</option>
+              <option value="余韻を残すオープンエンド" class="bg-slate-900">余韻を残すオープンエンド（読者の想像に委ねるラスト）</option>
+            </select>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04｜二人だけの思い出 -->
+      <section class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-3">
+            <span class="font-display text-2xl font-semibold text-emerald-300">04</span>
+            <span class="h-4 w-px bg-white/20"></span>
+            <h2 class="font-serif text-lg sm:text-xl font-semibold text-white tracking-wide">二人だけの思い出</h2>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10">空欄でもOK</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+          実際に交わした言葉や忘れられないセリフを登録すると、物語の自然な流れの中に印象的に織り込みます。
+        </p>
+
+        <div id="quotes-list" class="space-y-3 mb-3">
+          <!-- JSで動的セリフ行を追加 -->
+        </div>
+
+        <button id="btn-add-quote" type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 text-emerald-200 border border-dashed border-emerald-300/35 text-xs sm:text-sm transition">
+          <i class="fa-solid fa-quote-left text-xs"></i>
+          <span>思い出のセリフを追加する</span>
+        </button>
+      </section>
+
+      <!-- 05｜自由な追加設定 -->
+      <section class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="font-display text-2xl font-semibold text-emerald-300">05</span>
+          <span class="h-4 w-px bg-white/20"></span>
+          <h2 class="font-serif text-lg sm:text-xl font-semibold text-white tracking-wide">自由な追加設定</h2>
+        </div>
+        <textarea id="extra-notes" rows="3"
+          placeholder="時代の雰囲気、二人の間にある音楽やアイテムのモチーフ、ちょっとしたこだわりなど（例：いつもイヤホンを片方ずつ分け合っていた、古びたフィルムカメラがキーアイテム など）"
+          class="glass-input w-full rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 leading-relaxed"></textarea>
+      </section>
+
+      <!-- 06｜設定の保存・呼び出し -->
+      <section class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="font-display text-2xl font-semibold text-emerald-300">06</span>
+          <span class="h-4 w-px bg-white/20"></span>
+          <h2 class="font-serif text-lg sm:text-xl font-semibold text-white tracking-wide">設定の保存・呼び出し</h2>
+        </div>
+        <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+          今の設定に名前を付けて保存すると、次回からワンタップで呼び出せます。保存先はこのブラウザの中だけです。前回の設定は自動でも残ります。
+        </p>
+        <div class="flex gap-2 mb-4">
+          <input id="preset-name" type="text" placeholder="設定の名前（例：雨とレコード店の二人）"
+            class="glass-input flex-1 rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+          <button id="btn-save-preset" type="button"
+            class="px-4 py-2.5 rounded-2xl bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-200 border border-emerald-300/30 text-xs sm:text-sm font-medium transition shrink-0">
+            <i class="fa-solid fa-bookmark mr-1"></i>保存する
+          </button>
+        </div>
+        <div id="preset-list" class="flex flex-wrap gap-2">
+          <!-- JSで保存済み設定を描画 -->
+        </div>
+      </section>
+
+      <!-- 生成実行ボタン -->
+      <div class="pt-2 pb-6 text-center">
+        <button id="btn-generate-story" type="button"
+          class="group relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold text-slate-950 bg-gradient-to-r from-emerald-200 via-amber-200 to-emerald-300 hover:from-emerald-100 hover:to-amber-100 shadow-[0_10px_40px_rgba(110,231,183,0.35)] transition-all duration-300 active:scale-[0.98]">
+          <i class="fa-solid fa-book-open-reader text-slate-900 transition-transform group-hover:scale-110"></i>
+          <span>物語を紡ぐ（ChatGPT用プロンプトを作成）</span>
+        </button>
+        <div class="mt-4">
+          <button id="btn-open-cg" type="button"
+            class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold bg-white/5 hover:bg-white/10 text-emerald-200 border border-emerald-300/25 shadow-[0_10px_40px_rgba(0,0,0,0.25)] transition-all duration-300 active:scale-[0.98]">
+            <i class="fa-solid fa-comments"></i>
+            <span>物語なしで、曲作りプロンプトだけ作る</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==========================================
+         ローディングオーバーレイ（物語・楽曲共通）
+         ========================================== -->
+    <div id="loading-panel" class="hidden glass-card rounded-3xl p-10 sm:p-14 text-center my-8 animate-fade-in">
+      <div class="relative w-20 h-20 mx-auto mb-6">
+        <div class="absolute inset-0 rounded-full border-2 border-emerald-300/20"></div>
+        <div class="absolute inset-0 rounded-full border-t-2 border-emerald-300 animate-spin"></div>
+        <div class="absolute inset-3 rounded-full border-b-2 border-amber-200 animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+        <i id="loading-icon" class="fa-solid fa-feather-pointed absolute inset-0 flex items-center justify-center text-emerald-200 text-xl animate-pulse"></i>
+      </div>
+      <h3 id="loading-title" class="font-serif text-xl sm:text-2xl text-white font-semibold mb-2">
+        記憶の断片から、5ページの物語を紡いでいます…
+      </h3>
+      <p id="loading-subtitle" class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+        二人の言葉と情景が重なり合い、ひとつの世界が立ち上がるまで少々お待ちください。
+      </p>
+    </div>
+
+    <!-- ==========================================
+         セクション2: 5ページ ブックビューア
+         ========================================== -->
+    <section id="story-viewer-section" class="hidden space-y-6 animate-fade-in">
+      <!-- 上部ナビゲーション -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <button id="btn-back-to-edit" type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>設定を編集する</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button id="btn-copy-all-story" type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-amber-200 border border-amber-300/25 transition">
+            <i class="fa-regular fa-copy"></i>
+            <span>全5ページをコピー</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 本のカード本体 -->
+      <article class="book-paper rounded-3xl p-6 sm:p-10 md:p-12 relative overflow-hidden">
+        <!-- 装飾の栞リボン -->
+        <div class="absolute top-0 right-8 w-8 h-12 bg-gradient-to-b from-emerald-400/40 to-emerald-400/10 border-x border-emerald-300/20 rounded-b-lg flex items-end justify-center pb-2">
+          <i class="fa-solid fa-bookmark text-[10px] text-emerald-200/80"></i>
+        </div>
+
+        <!-- 物語タイトル＆章見出し -->
+        <header class="border-b border-white/10 pb-5 mb-6 pr-10">
+          <p id="story-meta-tag" class="text-xs text-emerald-300/90 tracking-widest mb-1.5 font-medium"></p>
+          <h2 id="story-main-title" class="font-serif text-2xl sm:text-3xl font-bold text-amber-100 leading-snug"></h2>
+          <div class="flex items-center gap-2 mt-3">
+            <span id="page-chapter-badge" class="inline-block px-3 py-0.5 rounded-full text-xs font-serif bg-emerald-400/15 text-emerald-200 border border-emerald-300/25">
+              Page 1
+            </span>
+            <h3 id="page-chapter-title" class="font-serif text-sm sm:text-base text-slate-300"></h3>
+          </div>
+        </header>
+
+        <!-- 物語本文（1ページ分） -->
+        <div id="story-page-content"
+          class="font-serif text-base sm:text-[17px] text-slate-100/95 leading-[2.05] tracking-wide space-y-5 min-h-[280px] sm:min-h-[320px] whitespace-pre-line">
+        </div>
+
+        <!-- 5ページ目限定：歌にするCTAボックス -->
+        <div id="song-cta-box" class="hidden mt-8 pt-6 border-t border-emerald-300/25 text-center animate-fade-in">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-emerald-200 mb-3">
+            <i class="fa-solid fa-music text-lg"></i>
+          </div>
+          <p class="font-serif text-base sm:text-lg text-amber-100 mb-4">
+            物語の余韻を、旋律と言葉に昇華させましょう。
+          </p>
+          <button id="btn-generate-song" type="button"
+            class="inline-flex items-center justify-center gap-3 px-7 py-4 rounded-full font-serif text-sm sm:text-base font-semibold text-slate-950 bg-gradient-to-r from-amber-200 via-emerald-200 to-teal-200 hover:brightness-105 shadow-[0_10px_35px_rgba(245,208,138,0.3)] transition active:scale-95">
+            <i class="fa-solid fa-compact-disc fa-spin" style="animation-duration: 6s;"></i>
+            <span>はい、この世界観を歌にする（歌詞＆SUNOプロンプト生成）</span>
+          </button>
+        </div>
+
+        <!-- ページ送りコントロール -->
+        <footer class="mt-8 pt-6 border-t border-white/10 flex items-center justify-between gap-2">
+          <button id="btn-prev-page" type="button"
+            class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none text-slate-200 border border-white/10 transition">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>前のページ</span>
+          </button>
+
+          <!-- ページインジケーター -->
+          <div class="flex flex-col items-center gap-1.5">
+            <span id="page-indicator-text" class="font-display text-base sm:text-lg tracking-widest text-amber-200 font-semibold">
+              1 / 5
+            </span>
+            <div id="page-dots" class="flex items-center gap-1.5">
+              <!-- JSで5つのドットを描画 -->
+            </div>
+          </div>
+
+          <button id="btn-next-page" type="button"
+            class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 disabled:opacity-30 disabled:pointer-events-none text-emerald-100 border border-emerald-300/30 transition">
+            <span>次のページ</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </footer>
+      </article>
+    </section>
+
+    <!-- ==========================================
+         セクション3: 楽曲＆SUNOプロンプト出力エリア
+         ========================================== -->
+    <section id="song-result-section" class="hidden mt-10 space-y-6 animate-fade-in">
+      <div class="text-center">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-300/10 border border-amber-300/30 text-xs text-amber-200 tracking-wider mb-2">
+          <i class="fa-solid fa-headphones"></i>
+          <span>A Story Becomes A Song</span>
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
+          物語から生まれた楽曲コンセプト
+        </h2>
+      </div>
+
+      <!-- 1. 世界観・テーマ分析 & 2. 抽出された印象的なセリフ・情景 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card rounded-3xl p-6 sm:p-7">
+          <div class="flex items-center gap-2.5 text-emerald-300 font-serif font-semibold text-base sm:text-lg mb-3">
+            <i class="fa-solid fa-compass"></i>
+            <h3>01｜物語の世界観・テーマ分析</h3>
+          </div>
+          <p id="song-worldview-analysis" class="text-sm text-slate-200/90 leading-relaxed whitespace-pre-line"></p>
+        </div>
+
+        <div class="glass-card rounded-3xl p-6 sm:p-7">
+          <div class="flex items-center gap-2.5 text-amber-200 font-serif font-semibold text-base sm:text-lg mb-3">
+            <i class="fa-solid fa-sparkles"></i>
+            <h3>02｜抽出された印象的なセリフ・情景</h3>
+          </div>
+          <ul id="song-extracted-motifs" class="space-y-2.5 text-sm text-slate-200/90">
+            <!-- JSでリスト表示 -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4. SUNO AI用 曲調プロンプト -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 border border-amber-300/30">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2.5 text-amber-200 font-serif font-semibold text-base sm:text-lg">
+            <i class="fa-solid fa-sliders"></i>
+            <h3>SUNO AI Style Prompt（英語曲調タグ）</h3>
+          </div>
+          <button id="btn-copy-suno" type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-amber-300/20 hover:bg-amber-300/30 text-amber-100 border border-amber-300/40 transition active:scale-95">
+            <i class="fa-regular fa-copy"></i>
+            <span>SUNOプロンプトをコピー</span>
+          </button>
+        </div>
+        <div id="suno-prompt-box"
+          class="glass-input rounded-2xl p-4 font-mono text-xs sm:text-sm text-amber-100 leading-relaxed select-all">
+        </div>
+      </div>
+
+      <!-- 3. オリジナル歌詞 -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 mb-6">
+          <div>
+            <span class="text-xs text-emerald-300 tracking-widest uppercase">Original Lyrics</span>
+            <h3 id="song-title" class="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5"></h3>
+          </div>
+          <button id="btn-copy-lyrics" type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border border-emerald-300/35 transition active:scale-95">
+            <i class="fa-regular fa-copy"></i>
+            <span>歌詞をすべてコピー</span>
+          </button>
+        </div>
+
+        <div id="song-lyrics-box"
+          class="font-serif text-sm sm:text-base text-slate-100/95 leading-[2.0] whitespace-pre-line max-w-2xl mx-auto">
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         セクション3.5: 物語作成プロンプト（ChatGPT用）
+         ========================================== -->
+    <section id="story-prompt-section" class="hidden mt-10 space-y-6 animate-fade-in">
+      <div class="text-center">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-300/10 border border-emerald-300/30 text-xs text-emerald-200 tracking-wider mb-2">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Story Prompt for ChatGPT</span>
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
+          物語作成プロンプト
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl mx-auto leading-relaxed">
+          物語は ChatGPT に書いてもらいます。下のプロンプトをコピーして、ChatGPTに貼ってください。物語ができたら、下の「曲作りプロンプト」で歌にできます。
+        </p>
+      </div>
+
+      <div class="glass-card rounded-3xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <span class="text-xs text-emerald-300 tracking-widest uppercase">Prompt for ChatGPT</span>
+          <button id="btn-copy-story-prompt" type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border border-emerald-300/35 transition active:scale-95">
+            <i class="fa-regular fa-copy"></i>
+            <span>プロンプトをコピー</span>
+          </button>
+        </div>
+        <textarea id="story-prompt-output" rows="14" readonly
+          class="glass-input w-full rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-100 leading-relaxed"></textarea>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         セクション4: ChatGPT用 曲作りプロンプト
+         ========================================== -->
+    <section id="chatgpt-section" class="hidden mt-10 space-y-6 animate-fade-in">
+      <div class="text-center">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-300/10 border border-emerald-300/30 text-xs text-emerald-200 tracking-wider mb-2">
+          <i class="fa-solid fa-comments"></i>
+          <span>For ChatGPT</span>
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
+          ChatGPT用 曲作りプロンプト
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl mx-auto leading-relaxed">
+          物語と設定を、ChatGPTにそのまま渡せる頼み方に整えます。できたプロンプトをコピーして、ChatGPTに貼ってください。
+        </p>
+      </div>
+
+      <div class="glass-card rounded-3xl p-6 sm:p-8">
+        <!-- 参照する物語（V3で追加） -->
+        <div class="mb-6">
+          <p class="text-xs font-medium text-slate-300 mb-2.5">
+            <i class="fa-solid fa-book-open mr-1.5 text-emerald-300"></i>参照する物語
+          </p>
+          <div class="flex flex-wrap gap-2 mb-3">
+            <label class="cursor-pointer">
+              <input type="radio" name="cg-story-source" value="maker" class="peer sr-only" checked />
+              <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-emerald-400/25 peer-checked:text-emerald-100 peer-checked:border-emerald-300/60 transition">
+                <i class="fa-solid fa-feather-pointed"></i>このメーカーの物語・設定
+              </span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="cg-story-source" value="paste" class="peer sr-only" />
+              <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-emerald-400/25 peer-checked:text-emerald-100 peer-checked:border-emerald-300/60 transition">
+                <i class="fa-solid fa-paste"></i>物語を貼り付ける
+              </span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="cg-story-source" value="none" class="peer sr-only" />
+              <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-emerald-400/25 peer-checked:text-emerald-100 peer-checked:border-emerald-300/60 transition">
+                <i class="fa-solid fa-ban"></i>物語なし
+              </span>
+            </label>
+          </div>
+          <div id="cg-paste-wrap" class="hidden">
+            <textarea id="cg-paste-story" rows="8" placeholder="ここに物語の全文を貼り付けてください。このメーカーで作った物語でも、ほかの場所で作った物語でもOKです。"
+              class="glass-input w-full rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 leading-relaxed"></textarea>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">貼り付けた物語だけを参照します。このメーカーの設定と、ここで生成した物語はプロンプトに入りません（キャンセルされます）。</p>
+          </div>
+        </div>
+
+        <!-- モード切替 -->
+        <div class="flex flex-wrap gap-2 mb-5">
+          <label class="cursor-pointer">
+            <input type="radio" name="cg-mode" value="auto" class="peer sr-only" checked />
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-emerald-400/25 peer-checked:text-emerald-100 peer-checked:border-emerald-300/60 transition">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>おまかせモード
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="cg-mode" value="custom" class="peer sr-only" />
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-emerald-400/25 peer-checked:text-emerald-100 peer-checked:border-emerald-300/60 transition">
+              <i class="fa-solid fa-sliders"></i>こだわりモード
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="cg-mode" value="shameless" class="peer sr-only" />
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-rose-400/25 peer-checked:text-rose-100 peer-checked:border-rose-300/60 transition">
+              <i class="fa-solid fa-fire"></i>破廉恥モード
+            </span>
+          </label>
+        </div>
+        <p id="cg-shameless-note" class="hidden text-xs text-rose-200/80 leading-relaxed -mt-3 mb-5">破廉恥モード：なぜか歌詞も曲調も色っぽくなります。覚悟してどうぞ。</p>
+
+        <!-- こだわり入力欄 -->
+        <div id="cg-custom-fields" class="hidden space-y-4 mb-5">
+          <p class="text-xs text-slate-400 leading-relaxed">空欄にすれば「おまかせ」になります。</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="cg-instruments" class="block text-xs font-medium text-slate-300 mb-2">楽器</label>
+              <input id="cg-instruments" type="text" placeholder="例：ピアノ、アコースティックギター、弦楽四重奏"
+                class="glass-input w-full rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+            </div>
+            <div>
+              <label for="cg-genre" class="block text-xs font-medium text-slate-300 mb-2">曲調・ジャンル</label>
+              <input id="cg-genre" type="text" placeholder="例：90年代J-POPバラード、シティポップ"
+                class="glass-input w-full rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+            </div>
+            <div>
+              <label for="cg-vocal" class="block text-xs font-medium text-slate-300 mb-2">ボーカル</label>
+              <input id="cg-vocal" type="text" placeholder="例：少しハスキーな中低音の女性、男女デュエット"
+                class="glass-input w-full rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+            </div>
+            <div>
+              <label for="cg-mood" class="block text-xs font-medium text-slate-300 mb-2">雰囲気・テンポ</label>
+              <input id="cg-mood" type="text" placeholder="例：72 BPM、切なくも最後は光が差す"
+                class="glass-input w-full rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+            </div>
+          </div>
+          <div>
+            <label for="cg-phrase" class="block text-xs font-medium text-slate-300 mb-2">歌詞に入れたい言葉・モチーフ</label>
+            <input id="cg-phrase" type="text" placeholder="例：「この世界観を歌にしますか？」への答えになる一節"
+              class="glass-input w-full rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500" />
+          </div>
+          <div>
+            <label for="cg-free" class="block text-xs font-medium text-slate-300 mb-2">その他のこだわり</label>
+            <textarea id="cg-free" rows="2" placeholder="例：サビで一度だけ転調したい、英語の行は2行まで、など"
+              class="glass-input w-full rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500 leading-relaxed"></textarea>
+          </div>
+        </div>
+
+        <div class="text-center mb-5">
+          <button id="btn-build-cg-prompt" type="button"
+            class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full font-serif text-sm sm:text-base font-semibold text-slate-950 bg-gradient-to-r from-emerald-200 via-amber-200 to-emerald-300 hover:brightness-105 shadow-[0_10px_35px_rgba(110,231,183,0.28)] transition active:scale-95">
+            <i class="fa-solid fa-scroll"></i>
+            <span>ChatGPT用プロンプトを作る</span>
+          </button>
+        </div>
+
+        <div id="cg-output-wrap" class="hidden">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <span class="text-xs text-emerald-300 tracking-widest uppercase">Prompt for ChatGPT</span>
+            <button id="btn-copy-cg-prompt" type="button"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border border-emerald-300/35 transition active:scale-95">
+              <i class="fa-regular fa-copy"></i>
+              <span>プロンプトをコピー</span>
+            </button>
+          </div>
+          <textarea id="cg-prompt-output" rows="14" readonly
+            class="glass-input w-full rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-100 leading-relaxed"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="mt-14 pt-6 border-t border-white/10 text-center text-xs text-slate-500">
+      <p class="font-display italic text-sm text-slate-400">Forever Story Maker</p>
+      <p class="mt-1">Memories become a story. A story becomes a song.</p>
+    </footer>
+  </div>
+
+  <!-- ==========================================
+       JavaScript ロジック（状態管理・Gemini API連携）
+       ========================================== -->
+  <script>
+    // ------------------------------------------
+    // 1. プリセットデータ定義
+    // ------------------------------------------
+    const PRESET_STAGES = [
+      '雨の日の駅',
+      '海辺のカフェ',
+      '夏の夜の花火大会',
+      '冬の図書館',
+      '古いレコード店',
+      '夕暮れの屋上',
+      '深夜のコンビニ'
+    ];
+
+    const PRESET_EMOTIONS = [
+      '切なさ',
+      '温もり',
+      '焦燥感',
+      '淡い期待',
+      '後悔',
+      '愛おしさ',
+      '静かな決意',
+      '懐かしさ'
+    ];
+
+    // アプリケーション状態
+    const state = {
+      stages: [...PRESET_STAGES],
+      userStages: new Set(),
+      selectedStages: new Set(['雨の日の駅', '古いレコード店']),
+      selectedEmotions: new Set(['切なさ', '温もり', '懐かしさ']),
+      storyData: null, // { title, pages: [{ pageNumber, chapterTitle, content }] }
+      currentPageIndex: 0,
+      songData: null
+    };
+
+    // DOM要素の参照
+    const els = {
+      femaleName: document.getElementById('female-name'),
+      maleName: document.getElementById('male-name'),
+      stageChips: document.getElementById('stage-chips'),
+      customStageInput: document.getElementById('custom-stage-input'),
+      btnAddStage: document.getElementById('btn-add-stage'),
+      btnClearStages: document.getElementById('btn-clear-stages'),
+      seasonSelect: document.getElementById('season-select'),
+      seasonNote: document.getElementById('season-note'),
+      relationInput: document.getElementById('relation-input'),
+      emotionChips: document.getElementById('emotion-chips'),
+      endingSelect: document.getElementById('ending-select'),
+      quotesList: document.getElementById('quotes-list'),
+      btnAddQuote: document.getElementById('btn-add-quote'),
+      extraNotes: document.getElementById('extra-notes'),
+      btnFillSample: document.getElementById('btn-fill-sample'),
+      btnResetForm: document.getElementById('btn-reset-form'),
+      btnGenerateStory: document.getElementById('btn-generate-story'),
+
+      setupSection: document.getElementById('setup-section'),
+      loadingPanel: document.getElementById('loading-panel'),
+      loadingIcon: document.getElementById('loading-icon'),
+      loadingTitle: document.getElementById('loading-title'),
+      loadingSubtitle: document.getElementById('loading-subtitle'),
+
+      storyViewerSection: document.getElementById('story-viewer-section'),
+      btnBackToEdit: document.getElementById('btn-back-to-edit'),
+      btnCopyAllStory: document.getElementById('btn-copy-all-story'),
+      storyMetaTag: document.getElementById('story-meta-tag'),
+      storyMainTitle: document.getElementById('story-main-title'),
+      pageChapterBadge: document.getElementById('page-chapter-badge'),
+      pageChapterTitle: document.getElementById('page-chapter-title'),
+      storyPageContent: document.getElementById('story-page-content'),
+      songCtaBox: document.getElementById('song-cta-box'),
+      btnGenerateSong: document.getElementById('btn-generate-song'),
+      btnPrevPage: document.getElementById('btn-prev-page'),
+      btnNextPage: document.getElementById('btn-next-page'),
+      pageIndicatorText: document.getElementById('page-indicator-text'),
+      pageDots: document.getElementById('page-dots'),
+
+      songResultSection: document.getElementById('song-result-section'),
+      songWorldviewAnalysis: document.getElementById('song-worldview-analysis'),
+      songExtractedMotifs: document.getElementById('song-extracted-motifs'),
+      sunoPromptBox: document.getElementById('suno-prompt-box'),
+      btnCopySuno: document.getElementById('btn-copy-suno'),
+      songTitle: document.getElementById('song-title'),
+      songLyricsBox: document.getElementById('song-lyrics-box'),
+      btnCopyLyrics: document.getElementById('btn-copy-lyrics'),
+
+      presetName: document.getElementById('preset-name'),
+      btnSavePreset: document.getElementById('btn-save-preset'),
+      presetList: document.getElementById('preset-list'),
+      btnOpenCg: document.getElementById('btn-open-cg'),
+
+      chatgptSection: document.getElementById('chatgpt-section'),
+      cgPasteWrap: document.getElementById('cg-paste-wrap'),
+      cgPasteStory: document.getElementById('cg-paste-story'),
+      cgShamelessNote: document.getElementById('cg-shameless-note'),
+      cgCustomFields: document.getElementById('cg-custom-fields'),
+      cgInstruments: document.getElementById('cg-instruments'),
+      cgGenre: document.getElementById('cg-genre'),
+      cgVocal: document.getElementById('cg-vocal'),
+      cgMood: document.getElementById('cg-mood'),
+      cgPhrase: document.getElementById('cg-phrase'),
+      cgFree: document.getElementById('cg-free'),
+      btnBuildCgPrompt: document.getElementById('btn-build-cg-prompt'),
+      cgOutputWrap: document.getElementById('cg-output-wrap'),
+      cgPromptOutput: document.getElementById('cg-prompt-output'),
+      btnCopyCgPrompt: document.getElementById('btn-copy-cg-prompt'),
+
+      girlImg: document.getElementById('girl-img'),
+      storyPromptSection: document.getElementById('story-prompt-section'),
+      storyPromptOutput: document.getElementById('story-prompt-output'),
+      btnCopyStoryPrompt: document.getElementById('btn-copy-story-prompt')
+    };
+
+    // ------------------------------------------
+    // 2. ユーティリティ（トースト通知・クリップボードコピー）
+    // ------------------------------------------
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const iconClass = type === 'error'
+        ? 'fa-circle-exclamation text-emerald-400'
+        : 'fa-circle-check text-amber-300';
+
+      toast.className = 'pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-slate-900/95 border border-white/15 text-xs sm:text-sm text-white shadow-xl backdrop-blur-md animate-fade-in';
+      toast.innerHTML = `<i class="fa-solid ${iconClass}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(6px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    function copyTextToClipboard(text, successMsg = 'クリップボードにコピーしました') {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (err) {
+        showToast('コピーに失敗しました', 'error');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // ------------------------------------------
+    // 3. チップ＆動的セリフ入力欄のレンダリング
+    // ------------------------------------------
+    function renderStageChips() {
+      els.stageChips.innerHTML = '';
+      state.stages.forEach(stage => {
+        const isSelected = state.selectedStages.has(stage);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = isSelected
+          ? 'px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/25 text-emerald-100 border border-emerald-300/60 shadow-[0_0_15px_rgba(110,231,183,0.2)] transition active:scale-95'
+          : 'px-3.5 py-2 rounded-full text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition active:scale-95';
+        const isUserStage = state.userStages.has(stage);
+        btn.innerHTML =
+          (isSelected ? `<i class="fa-solid fa-check text-[10px] mr-1.5 text-emerald-300"></i>` : '') +
+          (isUserStage ? `<i class="fa-solid fa-leaf text-[10px] mr-1.5 text-emerald-300/80" title="あなたが追加した舞台"></i>` : '') +
+          stage +
+          (isUserStage ? `<span class="stage-remove ml-2 text-slate-400 hover:text-emerald-200" title="この舞台を一覧から消す"><i class="fa-solid fa-xmark text-[10px]"></i></span>` : '');
+        btn.addEventListener('click', (e) => {
+          if (e.target.closest('.stage-remove')) {
+            forgetUserStage(stage);
+            return;
+          }
+          if (state.selectedStages.has(stage)) {
+            state.selectedStages.delete(stage);
+          } else {
+            state.selectedStages.add(stage);
+          }
+          renderStageChips();
+        });
+        els.stageChips.appendChild(btn);
+      });
+    }
+
+    function renderEmotionChips() {
+      els.emotionChips.innerHTML = '';
+      PRESET_EMOTIONS.forEach(emotion => {
+        const isSelected = state.selectedEmotions.has(emotion);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = isSelected
+          ? 'px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-amber-300/20 text-amber-100 border border-amber-300/60 shadow-[0_0_15px_rgba(245,208,138,0.18)] transition active:scale-95'
+          : 'px-3.5 py-2 rounded-full text-xs sm:text-sm bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition active:scale-95';
+        btn.innerHTML = isSelected
+          ? `<i class="fa-solid fa-heart text-[10px] mr-1.5 text-amber-300"></i>${emotion}`
+          : emotion;
+        btn.addEventListener('click', () => {
+          if (state.selectedEmotions.has(emotion)) {
+            state.selectedEmotions.delete(emotion);
+          } else {
+            state.selectedEmotions.add(emotion);
+          }
+          renderEmotionChips();
+        });
+        els.emotionChips.appendChild(btn);
+      });
+    }
+
+    function addQuoteRow(value = '') {
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2 animate-fade-in';
+      row.innerHTML = `
+        <div class="relative flex-1">
+          <i class="fa-solid fa-quote-left absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-300/50 text-xs"></i>
+          <input type="text" value="${value.replace(/"/g, '&quot;')}"
+            placeholder="例：「もし10年後も二人とも独りだったら、またこの場所で会おう」"
+            class="quote-input glass-input w-full rounded-2xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-slate-500" />
+        </div>
+        <button type="button" title="削除"
+          class="btn-remove-quote w-10 h-10 rounded-2xl bg-white/5 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-200 border border-white/10 flex items-center justify-center transition shrink-0">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      `;
+      row.querySelector('.btn-remove-quote').addEventListener('click', () => {
+        row.remove();
+      });
+      els.quotesList.appendChild(row);
+    }
+
+    // ------------------------------------------
+    // 4. サンプル入力・リセット処理
+    // ------------------------------------------
+    function fillSampleData() {
+      els.femaleName.value = '美咲';
+      els.maleName.value = '蓮';
+
+      const customStage = '坂の上の古いレコード店';
+      if (!state.stages.includes(customStage)) {
+        state.stages.push(customStage);
+      }
+      state.selectedStages = new Set(['雨の日の駅', customStage, '夕暮れの屋上']);
+      renderStageChips();
+
+      els.seasonSelect.value = '秋';
+      els.relationInput.value = 'すれ違う元恋人';
+
+      state.selectedEmotions = new Set(['切なさ', '温もり', '懐かしさ', '淡い期待']);
+      renderEmotionChips();
+
+      els.endingSelect.value = 'ビタースイート';
+
+      els.quotesList.innerHTML = '';
+      addQuoteRow('「この曲が終わるまで、もう少しだけ隣にいてもいい？」');
+      addQuoteRow('「さよならじゃなくて、またどこかで、にしようよ」');
+
+      els.extraNotes.value = '学生時代に二人でよく聴いていたアコースティックな洋楽レコードが二人の記憶をつなぐ鍵。雨音とレコードの針が落ちる音が印象的に響く雰囲気。';
+
+      showToast('サンプル設定を入力しました。「物語を紡ぐ」を押してみてください！');
+    }
+
+    function resetFormData() {
+      els.femaleName.value = '';
+      els.maleName.value = '';
+      state.selectedStages.clear();
+      renderStageChips();
+      els.seasonSelect.value = '夏';
+      els.seasonNote.value = '';
+      els.relationInput.value = '';
+      state.selectedEmotions.clear();
+      renderEmotionChips();
+      els.endingSelect.value = 'ハッピーエンド';
+      els.quotesList.innerHTML = '';
+      addQuoteRow('');
+      els.extraNotes.value = '';
+      showToast('入力内容をクリアしました');
+    }
+
+    // ------------------------------------------
+    // 5. Gemini API 呼び出し（指数バックオフ付き）
+    // ------------------------------------------
+    async function callGeminiWithRetry(payload, maxRetries = 4) {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      let delay = 1000;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) {
+            throw new Error('Empty response from Gemini API');
+          }
+          return JSON.parse(text);
+        } catch (error) {
+          if (attempt === maxRetries) {
+            throw error;
+          }
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= 2;
+        }
+      }
+    }
+
+    // ------------------------------------------
+    // 6. 全5ページ恋愛小説の生成
+    // ------------------------------------------
+    async function handleGenerateStory() {
+      const femaleName = els.femaleName.value.trim() || '美咲';
+      const maleName = els.maleName.value.trim() || '蓮';
+      const stages = Array.from(state.selectedStages);
+      const seasonNote = els.seasonNote.value.trim();
+      const season = seasonNote ? `${els.seasonSelect.value}（${seasonNote}）` : els.seasonSelect.value;
+      const relation = els.relationInput.value.trim() || '運命に導かれた二人';
+      const emotions = Array.from(state.selectedEmotions);
+      const ending = els.endingSelect.value;
+      const quotes = Array.from(document.querySelectorAll('.quote-input'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+      const extraNotes = els.extraNotes.value.trim();
+
+      // 選んだ舞台を学習し、今回の設定を自動保存する
+      learnStages(stages);
+      saveLastSettings();
+
+      // 公開版はAPIキーなし運用のため、アプリ内生成は行わず ChatGPT 用の物語プロンプトを提示する
+      const storyPrompt = [
+        'あなたは繊細で情景描写に優れた日本の恋愛小説家です。以下の設定をもとに、全5ページ構成の短編恋愛小説を執筆してください。',
+        '',
+        '【ルール】',
+        '1. 必ず全5ページで構成し、各ページに短い副題を付けること。',
+        '2. 各ページの文章量は日本語で320〜420文字程度に統一すること。本文は2〜3行ごとに改行して段落を分け、詰めて表記して読みやすくすること。',
+        '3. 「思い出のセリフ」がある場合は、すべて物語の中に自然に織り込むこと。',
+        '4. 冒頭に小説のタイトルを1行で示すこと。',
+        '5. 出力はプレーンテキストのみとし、マークダウンの装飾（#、**、- など）やコードブロックは使わないこと。そのままコピー＆ペーストできる形で、各ページは「Page 1｜副題」の見出し行と本文で区切ること。',
+        '',
+        '【設定】',
+        `- 女性主人公：${femaleName}／男性主人公：${maleName}`,
+        `- 舞台：${stages.length > 0 ? stages.join('、') : '静かな街角'}`,
+        `- 季節：${season}／二人の関係：${relation}`,
+        `- 感情：${emotions.length > 0 ? emotions.join('、') : '切なさ、温もり'}／結末：${ending}`,
+        quotes.length > 0 ? `- 思い出のセリフ：\n${quotes.map((q, i) => `  ${i + 1}. ${q}`).join('\n')}` : '- 思い出のセリフ：指定なし（二人の関係性に合った印象的なセリフを創作してください）',
+        extraNotes ? `- 追加設定：${extraNotes}` : '- 追加設定：特になし'
+      ].join('\n');
+
+      els.storyPromptSection.classList.remove('hidden');
+      els.storyPromptOutput.value = storyPrompt;
+      els.storyPromptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast('物語作成プロンプトを用意しました。コピーしてChatGPTに貼ってください');
+      return;
+
+      // UI切り替え（ローディング表示）
+      els.setupSection.classList.add('hidden');
+      els.storyViewerSection.classList.add('hidden');
+      els.songResultSection.classList.add('hidden');
+      els.loadingPanel.classList.remove('hidden');
+      els.loadingIcon.className = 'fa-solid fa-feather-pointed absolute inset-0 flex items-center justify-center text-emerald-200 text-xl animate-pulse';
+      els.loadingTitle.textContent = '記憶の断片から、5ページの物語を紡いでいます…';
+      els.loadingSubtitle.textContent = `${femaleName}と${maleName}の情景と言葉を重ね合わせ、全5ページの小説を執筆中です。`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const systemPrompt = `あなたは繊細で情景描写に優れた日本の恋愛小説家です。
+ユーザーから与えられた設定をもとに、全5ページ構成の短編恋愛小説を執筆してください。
+
+【絶対遵守ルール】
+1. 必ず全5ページ（pages配列の要素数が5つ）で構成すること。
+2. 各ページの文章量は、1ページあたり日本語で320〜420文字程度の充実した一定のボリュームに統一すること。適度に改行を入れ、小説として読みやすく美しい文体にすること。
+3. 登録された「思い出のセリフ」がある場合は、物語の自然な流れ・会話・回想の中に必ずすべて印象的に織り込むこと。
+4. 5ページ目（pageNumber: 5）の本文の最後の行には、物語の余韻を締めくくる形で、必ず一言一句違わず「この世界観を歌にしますか？」という一文を含めること。`;
+
+      const userQuery = `以下の設定で全5ページの恋愛小説を執筆してください。
+
+■ 主人公
+- 女性主人公：${femaleName}
+- 男性主人公：${maleName}
+
+■ 二人の世界
+- 舞台：${stages.length > 0 ? stages.join('、') : '静かな街角'}
+- 季節：${season}
+- 二人の関係：${relation}
+
+■ 心に流れる感情と結末
+- 物語の感情：${emotions.length > 0 ? emotions.join('、') : '切なさ、温もり'}
+- 物語の結末：${ending}
+
+■ 二人だけの思い出のセリフ（必ず物語内に自然に織り込むこと）
+${quotes.length > 0 ? quotes.map((q, i) => `${i + 1}. ${q}`).join('\n') : '（指定なし。二人の関係性に合った印象的なセリフを創作してください）'}
+
+■ 自由な追加設定
+${extraNotes || '特になし'}`;
+
+      const payload = {
+        contents: [{ role: 'user', parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: 'OBJECT',
+            properties: {
+              title: { type: 'STRING', description: '小説の美しいタイトル' },
+              pages: {
+                type: 'ARRAY',
+                description: '全5ページの配列',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    pageNumber: { type: 'INTEGER' },
+                    chapterTitle: { type: 'STRING', description: 'そのページの短い副題' },
+                    content: { type: 'STRING', description: 'そのページの小説本文（320〜420文字程度）。5ページ目の最後は必ず「この世界観を歌にしますか？」で終える。' }
+                  },
+                  required: ['pageNumber', 'chapterTitle', 'content']
+                }
+              }
+            },
+            required: ['title', 'pages']
+          }
+        }
+      };
+
+      try {
+        const storyResult = await callGeminiWithRetry(payload);
+
+        // 念のため5ページ目の末尾に問いかけがあるか保証する
+        if (storyResult.pages && storyResult.pages.length > 0) {
+          const lastIdx = storyResult.pages.length - 1;
+          if (!storyResult.pages[lastIdx].content.includes('この世界観を歌にしますか？')) {
+            storyResult.pages[lastIdx].content = storyResult.pages[lastIdx].content.trim() + '\n\nこの世界観を歌にしますか？';
+          }
+        }
+
+        state.storyData = storyResult;
+        state.currentPageIndex = 0;
+
+        els.storyMetaTag.textContent = `${femaleName} & ${maleName} ｜ ${season}・${relation}`;
+        els.storyMainTitle.textContent = storyResult.title;
+
+        els.loadingPanel.classList.add('hidden');
+        els.storyViewerSection.classList.remove('hidden');
+        els.chatgptSection.classList.remove('hidden');
+        renderCurrentPage();
+        showToast('全5ページの物語が完成しました');
+      } catch (err) {
+        els.loadingPanel.classList.add('hidden');
+        els.setupSection.classList.remove('hidden');
+        showToast('物語の生成中にエラーが発生しました。もう一度お試しください。', 'error');
+      }
+    }
+
+    // ------------------------------------------
+    // 7. ブックビューアのページ描画
+    // ------------------------------------------
+    function renderCurrentPage() {
+      if (!state.storyData || !state.storyData.pages) return;
+
+      const pages = state.storyData.pages;
+      const total = pages.length;
+      const idx = state.currentPageIndex;
+      const page = pages[idx];
+
+      els.pageChapterBadge.textContent = `Page ${idx + 1} / ${total}`;
+      els.pageChapterTitle.textContent = page.chapterTitle || '';
+      els.storyPageContent.textContent = page.content;
+      els.pageIndicatorText.textContent = `${idx + 1} / ${total}`;
+
+      // ドットインジケーター更新
+      els.pageDots.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.ariaLabel = `${i + 1}ページ目へ移動`;
+        dot.className = i === idx
+          ? 'w-6 h-1.5 rounded-full bg-emerald-300 transition-all'
+          : 'w-1.5 h-1.5 rounded-full bg-white/25 hover:bg-white/50 transition-all';
+        dot.addEventListener('click', () => {
+          state.currentPageIndex = i;
+          renderCurrentPage();
+        });
+        els.pageDots.appendChild(dot);
+      }
+
+      // ボタン活性制御
+      els.btnPrevPage.disabled = idx === 0;
+      els.btnNextPage.disabled = idx === total - 1;
+
+      // 5ページ目（最終ページ）に到達したら歌にするCTAを表示
+      if (idx === total - 1) {
+        els.songCtaBox.classList.remove('hidden');
+      } else {
+        els.songCtaBox.classList.add('hidden');
+      }
+    }
+
+    // ------------------------------------------
+    // 8. 物語から楽曲＆SUNOプロンプトを生成
+    // ------------------------------------------
+    async function handleGenerateSong() {
+      if (!state.storyData) return;
+
+      const fullStoryText = state.storyData.pages
+        .map(p => `【Page ${p.pageNumber}: ${p.chapterTitle}】\n${p.content}`)
+        .join('\n\n');
+
+      // ローディング表示
+      els.loadingPanel.classList.remove('hidden');
+      els.songResultSection.classList.add('hidden');
+      els.loadingIcon.className = 'fa-solid fa-music absolute inset-0 flex items-center justify-center text-amber-200 text-xl animate-bounce';
+      els.loadingTitle.textContent = '物語の余韻から、一曲の歌を紡いでいます…';
+      els.loadingSubtitle.textContent = '世界観の分析、印象的な言葉の抽出、歌詞構成とSUNO AIプロンプトを生成しています。';
+      els.loadingPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      const systemPrompt = `あなたは一流の作詞家兼音楽プロデューサーであり、SUNO AIのプロンプトエンジニアです。
+与えられた全5ページの恋愛小説を深く読み込み、以下の4つの要素をJSON形式で出力してください。
+
+1. worldviewAnalysis: 物語全体のテーマ、感情のグラデーション、色彩や空気感の分析（180〜250文字程度の丁寧な解説）。
+2. extractedMotifs: 物語の中から抽出した印象的なセリフや情景のリスト（3〜5個）。
+3. songTitle: この物語から生まれた楽曲のタイトル（日本語・英語どちらでも世界観に合うもの）。
+4. lyrics: [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Bridge], [Chorus], [Outro] の構成タグを含み、日本語をベースに感情が高まるサビなどで美しい英語フレーズを自然に織り交ぜたオリジナル歌詞。物語内の思い出のセリフや情景を昇華させること。
+5. sunoPrompt: SUNO AIの「Style of Music」欄にそのまま貼り付けて使える英語の音楽スタイルタグ（例: "Emotional J-Pop ballad, acoustic guitar, warm piano, rainy night atmosphere, nostalgic female & male duet vocals, cinematic strings, bittersweet, 78 bpm" のようにジャンル・楽器・テンポ・ボーカル質・空気感をカンマ区切りで具体的に記述）。`;
+
+      const userQuery = `以下の恋愛小説『${state.storyData.title}』を分析し、楽曲とSUNO AIプロンプトを生成してください。\n\n${fullStoryText}`;
+
+      const payload = {
+        contents: [{ role: 'user', parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: 'OBJECT',
+            properties: {
+              worldviewAnalysis: { type: 'STRING' },
+              extractedMotifs: {
+                type: 'ARRAY',
+                items: { type: 'STRING' }
+              },
+              songTitle: { type: 'STRING' },
+              lyrics: { type: 'STRING' },
+              sunoPrompt: { type: 'STRING' }
+            },
+            required: ['worldviewAnalysis', 'extractedMotifs', 'songTitle', 'lyrics', 'sunoPrompt']
+          }
+        }
+      };
+
+      try {
+        const songResult = await callGeminiWithRetry(payload);
+        state.songData = songResult;
+
+        els.songWorldviewAnalysis.textContent = songResult.worldviewAnalysis;
+
+        els.songExtractedMotifs.innerHTML = '';
+        (songResult.extractedMotifs || []).forEach(motif => {
+          const li = document.createElement('li');
+          li.className = 'flex items-start gap-2.5 bg-white/5 rounded-xl px-3.5 py-2.5 border border-white/5';
+          li.innerHTML = `<i class="fa-solid fa-quote-left text-amber-300/70 text-xs mt-1 shrink-0"></i><span>${motif}</span>`;
+          els.songExtractedMotifs.appendChild(li);
+        });
+
+        els.sunoPromptBox.textContent = songResult.sunoPrompt;
+        els.songTitle.textContent = `♪ ${songResult.songTitle}`;
+        els.songLyricsBox.textContent = songResult.lyrics;
+
+        els.loadingPanel.classList.add('hidden');
+        els.songResultSection.classList.remove('hidden');
+        els.songResultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('オリジナル歌詞とSUNOプロンプトが完成しました！');
+      } catch (err) {
+        els.loadingPanel.classList.add('hidden');
+        showToast('楽曲の生成中にエラーが発生しました。もう一度お試しください。', 'error');
+      }
+    }
+
+    // ------------------------------------------
+    // 8.5 舞台の学習・設定プリセット・ChatGPT用プロンプト
+    // ------------------------------------------
+    const LS_USER_STAGES = 'fsm_user_stages_v1';
+    const LS_PRESETS = 'fsm_presets_v1';
+    const LS_LAST = 'fsm_last_settings_v1';
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+    function saveJSON(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* 保存できない環境では何もしない */ }
+    }
+
+    // ② 選んだ舞台を覚える
+    function learnStages(stageNames) {
+      let changed = false;
+      stageNames.forEach(name => {
+        if (!name) return;
+        if (!state.stages.includes(name)) state.stages.push(name);
+        if (!state.userStages.has(name)) { state.userStages.add(name); changed = true; }
+      });
+      if (changed) saveJSON(LS_USER_STAGES, Array.from(state.userStages));
+    }
+    function forgetUserStage(stage) {
+      state.userStages.delete(stage);
+      state.selectedStages.delete(stage);
+      if (!PRESET_STAGES.includes(stage)) {
+        state.stages = state.stages.filter(s => s !== stage);
+      }
+      saveJSON(LS_USER_STAGES, Array.from(state.userStages));
+      renderStageChips();
+      showToast(`舞台「${stage}」を一覧から消しました`);
+    }
+    function loadUserStages() {
+      const saved = loadJSON(LS_USER_STAGES, []);
+      if (Array.isArray(saved)) saved.forEach(name => {
+        if (!state.stages.includes(name)) state.stages.push(name);
+        state.userStages.add(name);
+      });
+    }
+
+    // ③ 設定の収集・適用・プリセット
+    function collectSettings() {
+      return {
+        femaleName: els.femaleName.value,
+        maleName: els.maleName.value,
+        stages: Array.from(state.selectedStages),
+        season: els.seasonSelect.value,
+        seasonNote: els.seasonNote.value,
+        relation: els.relationInput.value,
+        emotions: Array.from(state.selectedEmotions),
+        ending: els.endingSelect.value,
+        quotes: Array.from(document.querySelectorAll('.quote-input')).map(i => i.value),
+        extraNotes: els.extraNotes.value
+      };
+    }
+    function applySettings(data) {
+      if (!data) return;
+      els.femaleName.value = data.femaleName || '';
+      els.maleName.value = data.maleName || '';
+      (data.stages || []).forEach(name => { if (!state.stages.includes(name)) state.stages.push(name); });
+      state.selectedStages = new Set(data.stages || []);
+      renderStageChips();
+      if (data.season) els.seasonSelect.value = data.season;
+      els.seasonNote.value = data.seasonNote || '';
+      els.relationInput.value = data.relation || '';
+      state.selectedEmotions = new Set(data.emotions || []);
+      renderEmotionChips();
+      if (data.ending) els.endingSelect.value = data.ending;
+      els.quotesList.innerHTML = '';
+      const quotes = (data.quotes || []).filter(q => q && q.trim());
+      if (quotes.length > 0) quotes.forEach(q => addQuoteRow(q)); else addQuoteRow('');
+      els.extraNotes.value = data.extraNotes || '';
+    }
+    // 収録プリセット（アプリに最初から入っている設定）
+    const BUILTIN_PRESETS = [
+      {
+        name: '秋の約束（紗花と拓海）',
+        data: {
+          femaleName: '紗花',
+          maleName: '拓海',
+          stages: ['古書店', '喫茶店', '初めての彼の部屋'],
+          season: '秋',
+          relation: '大事な親友の彼氏',
+          emotions: ['切なさ', '愛おしさ', '温もり', '後悔'],
+          ending: 'ビタースイート',
+          quotes: [
+            '「この匂い。わたしずっと忘れない気がする…」',
+            '「よかったらあげるよ。その香水。内緒にね。」'
+          ],
+          extraNotes: '帰り道で夕立に追われ、はじめて彼の部屋に入る。ぬれた制服を見て彼は視線をそらし、部屋着を貸してくれる。その香水が二人の秘密のモチーフ。つまづいて倒れかけた瞬間、彼の顔がふいに近づく。越えられない設定と、分岐点で世界を選ぶ権利の間で揺れる青春。'
+        }
+      }
+    ];
+
+    function renderPresetList() {
+      const presets = loadJSON(LS_PRESETS, []);
+      els.presetList.innerHTML = '';
+      BUILTIN_PRESETS.forEach((preset) => {
+        const wrap = document.createElement('span');
+        wrap.className = 'inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full text-xs sm:text-sm bg-amber-300/10 border border-amber-300/30 text-amber-100';
+        wrap.innerHTML = `<i class="fa-solid fa-star text-amber-300/90 text-[10px]"></i><span>${preset.name}</span>` +
+          `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-300/15 text-amber-200/90">収録</span>` +
+          `<button type="button" class="preset-load px-2 py-0.5 rounded-full bg-amber-300/20 hover:bg-amber-300/30 text-amber-100 transition">呼び出す</button>`;
+        wrap.querySelector('.preset-load').addEventListener('click', () => {
+          applySettings(preset.data);
+          showToast(`設定「${preset.name}」を呼び出しました`);
+        });
+        els.presetList.appendChild(wrap);
+      });
+      if (!Array.isArray(presets) || presets.length === 0) {
+        const note = document.createElement('span');
+        note.className = 'text-xs text-slate-500';
+        note.textContent = '（あなたが保存した設定はまだありません）';
+        els.presetList.appendChild(note);
+        return;
+      }
+      presets.forEach((preset, idx) => {
+        const wrap = document.createElement('span');
+        wrap.className = 'inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200';
+        wrap.innerHTML = `<i class="fa-solid fa-bookmark text-emerald-300/80 text-[10px]"></i><span>${preset.name}</span>` +
+          `<button type="button" class="preset-load px-2 py-0.5 rounded-full bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 transition">呼び出す</button>` +
+          `<button type="button" class="preset-delete px-1.5 py-0.5 rounded-full hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-200 transition" title="削除"><i class="fa-solid fa-xmark text-[10px]"></i></button>`;
+        wrap.querySelector('.preset-load').addEventListener('click', () => {
+          applySettings(preset.data);
+          showToast(`設定「${preset.name}」を呼び出しました`);
+        });
+        wrap.querySelector('.preset-delete').addEventListener('click', () => {
+          const list = loadJSON(LS_PRESETS, []);
+          list.splice(idx, 1);
+          saveJSON(LS_PRESETS, list);
+          renderPresetList();
+          showToast(`設定「${preset.name}」を削除しました`);
+        });
+        els.presetList.appendChild(wrap);
+      });
+    }
+    function saveCurrentPreset() {
+      const name = els.presetName.value.trim();
+      if (!name) { showToast('設定の名前を入力してください', 'error'); return; }
+      const presets = loadJSON(LS_PRESETS, []);
+      const data = collectSettings();
+      const existing = presets.findIndex(p => p.name === name);
+      if (existing >= 0) presets[existing] = { name, data }; else presets.push({ name, data });
+      saveJSON(LS_PRESETS, presets);
+      els.presetName.value = '';
+      renderPresetList();
+      showToast(`設定「${name}」を保存しました`);
+    }
+    function saveLastSettings() { saveJSON(LS_LAST, collectSettings()); }
+    function restoreLastSettings() {
+      const last = loadJSON(LS_LAST, null);
+      if (last) applySettings(last);
+    }
+
+    // ④ ChatGPT用プロンプト生成
+    function currentCgMode() {
+      const checked = document.querySelector('input[name="cg-mode"]:checked');
+      return checked ? checked.value : 'auto';
+    }
+    // V3: 参照する物語の出どころ（maker=このメーカーの設定・物語／paste=貼り付けた物語／none=物語なし）
+    function currentCgStorySource() {
+      const checked = document.querySelector('input[name="cg-story-source"]:checked');
+      return checked ? checked.value : 'maker';
+    }
+    function buildChatGptPrompt() {
+      const s = collectSettings();
+      const mode = currentCgMode();
+      const source = currentCgStorySource();
+      const lines = [];
+      lines.push('あなたは一流の作詞家・音楽プロデューサーです。以下の内容をもとに、オリジナルの楽曲を作ってください。');
+      lines.push('');
+      lines.push('【作ってほしいもの】');
+      lines.push('1. 楽曲タイトル（日本語。世界観に合う美しいもの）');
+      lines.push('2. 歌詞全文 ― [Intro] [Verse 1] [Pre-Chorus] [Chorus] [Verse 2] [Bridge] [Final Chorus] [Outro] の構成タグ付き。物語の情景とセリフを昇華させ、サビには印象的なフックを置くこと');
+      lines.push('3. SUNO AIの Style 欄にそのまま貼れる英語のスタイル指定（ジャンル、楽器、テンポ（BPM）、ボーカルの質感、空気感をカンマ区切りで具体的に。実在のアーティスト名や曲名は入れないこと）');
+      lines.push('');
+      if (source === 'paste') {
+        // 貼り付けた物語だけを参照し、このメーカーの設定・生成物語はキャンセルする
+        const pasted = els.cgPasteStory.value.trim();
+        if (!pasted) return null;
+        lines.push('【参照する物語】');
+        lines.push('（以下はユーザーが貼り付けた物語です。この物語の世界観・情景・セリフだけを参照してください）');
+        lines.push(pasted);
+        lines.push('');
+      } else if (source === 'none') {
+        lines.push('【物語について】');
+        lines.push('物語の指定はありません。テーマや情景は、以下の音楽の方向性に合わせて自由に想像して作詞してください。');
+        lines.push('');
+      } else {
+        lines.push('【物語の設定】');
+        lines.push(`- 女性主人公：${s.femaleName || '美咲'}／男性主人公：${s.maleName || '蓮'}`);
+        lines.push(`- 舞台：${s.stages.length ? s.stages.join('、') : '静かな街角'}`);
+        lines.push(`- 季節：${s.seasonNote ? `${s.season}（${s.seasonNote}）` : s.season}／二人の関係：${s.relation || '運命に導かれた二人'}`);
+        lines.push(`- 感情：${s.emotions.length ? s.emotions.join('、') : '切なさ、温もり'}／結末：${s.ending}`);
+        const quotes = s.quotes.filter(q => q && q.trim());
+        if (quotes.length) lines.push(`- 思い出のセリフ：${quotes.join(' ／ ')}`);
+        if (s.extraNotes && s.extraNotes.trim()) lines.push(`- 追加設定：${s.extraNotes.trim()}`);
+        lines.push('');
+        if (state.storyData && state.storyData.pages) {
+          lines.push(`【物語『${state.storyData.title}』全文】`);
+          lines.push(state.storyData.pages.map(p => `― Page ${p.pageNumber}｜${p.chapterTitle} ―\n${p.content}`).join('\n\n'));
+          lines.push('');
+        } else {
+          lines.push('【物語について】');
+          lines.push('物語の本文はまだ生成されていません。上記の設定から世界観を想像して作詞してください。');
+          lines.push('');
+        }
+      }
+      lines.push('【音楽の方向性】');
+      if (mode === 'shameless') {
+        lines.push('- 破廉恥モード指定：なぜか歌詞も曲調も色っぽくなるモードです。以下を必ず反映してください');
+        lines.push('- 歌詞：官能的で色気のある言葉選びにすること。吐息、体温、指先、唇、視線、肌の距離感といったモチーフを艶っぽく使い、直接的すぎる表現ではなく、匂い立つような大人の色気で魅せること');
+        lines.push('- 曲調：艶やかでムーディーな大人の雰囲気。スローからミドルテンポで、囁くような歌い回しと、息づかいまで聞こえる距離感を意識すること');
+        lines.push('- ボーカル：色気のある艶やかな声にすること。SUNO用Styleには sensual、sultry、breathy vocals、slow jam のような色気のある指定を必ず含めること');
+      } else if (mode === 'custom') {
+        const items = [];
+        if (els.cgInstruments.value.trim()) items.push(`- 楽器：${els.cgInstruments.value.trim()}`);
+        if (els.cgGenre.value.trim()) items.push(`- 曲調・ジャンル：${els.cgGenre.value.trim()}`);
+        if (els.cgVocal.value.trim()) items.push(`- ボーカル：${els.cgVocal.value.trim()}`);
+        if (els.cgMood.value.trim()) items.push(`- 雰囲気・テンポ：${els.cgMood.value.trim()}`);
+        if (els.cgPhrase.value.trim()) items.push(`- 歌詞に入れたい言葉・モチーフ：${els.cgPhrase.value.trim()}`);
+        if (els.cgFree.value.trim()) items.push(`- その他のこだわり：${els.cgFree.value.trim()}`);
+        if (items.length) lines.push(...items);
+        else lines.push('- 指定なし（こだわりモードですが未入力のため、物語に合う方向性で自由に決めてください）');
+      } else {
+        lines.push('- おまかせ：楽器・曲調・ボーカル・テンポはすべて物語の世界観に合わせて自由に決めてください');
+      }
+      lines.push('');
+      lines.push('出力は「タイトル → 歌詞 → SUNO用Style」の順でお願いします。');
+      return lines.join('\n');
+    }
+
+    // ------------------------------------------
+    // 9. イベントリスナー登録と初期化
+    // ------------------------------------------
+    function init() {
+      loadUserStages();
+      renderStageChips();
+      renderEmotionChips();
+      addQuoteRow('');
+      restoreLastSettings();
+      renderPresetList();
+
+      // 設定プリセット保存
+      els.btnSavePreset.addEventListener('click', saveCurrentPreset);
+      els.presetName.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); saveCurrentPreset(); }
+      });
+
+      // ChatGPT用プロンプト
+      document.querySelectorAll('input[name="cg-mode"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          els.cgCustomFields.classList.toggle('hidden', currentCgMode() !== 'custom');
+          els.cgShamelessNote.classList.toggle('hidden', currentCgMode() !== 'shameless');
+        });
+      });
+      // V3: 参照する物語の切替（貼り付け欄の表示）
+      document.querySelectorAll('input[name="cg-story-source"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          els.cgPasteWrap.classList.toggle('hidden', currentCgStorySource() !== 'paste');
+        });
+      });
+      // 曲作りのときは、左下の少女が魔法帽をかぶる
+      const wearMagicHat = () => { if (els.girlImg) els.girlImg.src = 'apprentice_witch_hat.webp'; };
+      els.btnOpenCg.addEventListener('click', () => {
+        els.chatgptSection.classList.remove('hidden');
+        wearMagicHat();
+        els.chatgptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      els.btnBuildCgPrompt.addEventListener('click', () => {
+        const prompt = buildChatGptPrompt();
+        if (prompt === null) {
+          showToast('物語を貼り付けてください', 'error');
+          return;
+        }
+        els.cgPromptOutput.value = prompt;
+        els.cgOutputWrap.classList.remove('hidden');
+        wearMagicHat();
+        showToast('ChatGPT用プロンプトを作成しました');
+      });
+      els.btnCopyCgPrompt.addEventListener('click', () => {
+        if (!els.cgPromptOutput.value) return;
+        copyTextToClipboard(els.cgPromptOutput.value, 'ChatGPT用プロンプトをコピーしました');
+      });
+      els.btnCopyStoryPrompt.addEventListener('click', () => {
+        if (!els.storyPromptOutput.value) return;
+        copyTextToClipboard(els.storyPromptOutput.value, '物語作成プロンプトをコピーしました');
+      });
+
+      // 自由な舞台追加
+      const addCustomStage = () => {
+        const val = els.customStageInput.value.trim();
+        if (!val) return;
+        if (!state.stages.includes(val)) {
+          state.stages.push(val);
+        }
+        learnStages([val]);
+        state.selectedStages.add(val);
+        els.customStageInput.value = '';
+        renderStageChips();
+        showToast(`舞台「${val}」を追加しました`);
+      };
+
+      // V3: 舞台の選択をまとめてクリア（デフォルトの選択も外せる）
+      els.btnClearStages.addEventListener('click', () => {
+        if (state.selectedStages.size === 0) {
+          showToast('舞台はすでに何も選ばれていません');
+          return;
+        }
+        state.selectedStages.clear();
+        renderStageChips();
+        showToast('舞台の選択をクリアしました');
+      });
+
+      els.btnAddStage.addEventListener('click', addCustomStage);
+      els.customStageInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addCustomStage();
+        }
+      });
+
+      // セリフ追加
+      els.btnAddQuote.addEventListener('click', () => addQuoteRow(''));
+
+      // サンプル＆リセット
+      els.btnFillSample.addEventListener('click', fillSampleData);
+      els.btnResetForm.addEventListener('click', resetFormData);
+
+      // 物語生成
+      els.btnGenerateStory.addEventListener('click', handleGenerateStory);
+
+      // 設定画面へ戻る
+      els.btnBackToEdit.addEventListener('click', () => {
+        els.storyViewerSection.classList.add('hidden');
+        els.setupSection.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // ページ送り
+      els.btnPrevPage.addEventListener('click', () => {
+        if (state.currentPageIndex > 0) {
+          state.currentPageIndex--;
+          renderCurrentPage();
+        }
+      });
+
+      els.btnNextPage.addEventListener('click', () => {
+        if (state.storyData && state.currentPageIndex < state.storyData.pages.length - 1) {
+          state.currentPageIndex++;
+          renderCurrentPage();
+        }
+      });
+
+      // スワイプによるページ送り対応（モバイル向け）
+      let touchStartX = 0;
+      els.storyPageContent.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      els.storyPageContent.addEventListener('touchend', e => {
+        const diff = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diff) > 50 && state.storyData) {
+          if (diff < 0 && state.currentPageIndex < state.storyData.pages.length - 1) {
+            state.currentPageIndex++;
+            renderCurrentPage();
+          } else if (diff > 0 && state.currentPageIndex > 0) {
+            state.currentPageIndex--;
+            renderCurrentPage();
+          }
+        }
+      }, { passive: true });
+
+      // 全5ページコピー
+      els.btnCopyAllStory.addEventListener('click', () => {
+        if (!state.storyData) return;
+        const text = `『${state.storyData.title}』\n\n` +
+          state.storyData.pages.map(p => `--- Page ${p.pageNumber}｜${p.chapterTitle} ---\n${p.content}`).join('\n\n');
+        copyTextToClipboard(text, '物語（全5ページ）をコピーしました');
+      });
+
+      // 歌にする実行
+      els.btnGenerateSong.addEventListener('click', handleGenerateSong);
+
+      // SUNOプロンプト＆歌詞コピー
+      els.btnCopySuno.addEventListener('click', () => {
+        if (!state.songData) return;
+        copyTextToClipboard(state.songData.sunoPrompt, 'SUNOプロンプトをコピーしました');
+      });
+
+      els.btnCopyLyrics.addEventListener('click', () => {
+        if (!state.songData) return;
+        const text = `${state.songData.songTitle}\n\n${state.songData.lyrics}`;
+        copyTextToClipboard(text, '歌詞をコピーしました');
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
