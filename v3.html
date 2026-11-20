@@ -177,6 +177,11 @@
           <i class="fa-solid fa-rotate-left"></i>
           <span>入力をクリア</span>
         </button>
+        <button id="btn-quick-paste" type="button"
+          class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-medium bg-amber-300/10 hover:bg-amber-300/20 text-amber-200 border border-amber-300/40 transition active:scale-95">
+          <i class="fa-solid fa-paste"></i>
+          <span>物語を貼り付けて曲作りへ</span>
+        </button>
       </div>
     </header>
 
@@ -381,19 +386,22 @@
       </section>
 
       <!-- 生成実行ボタン -->
-      <div class="pt-2 pb-6 text-center">
+      <div class="pt-2 pb-6 flex flex-col items-center gap-4">
         <button id="btn-generate-story" type="button"
-          class="group relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold text-slate-950 bg-gradient-to-r from-emerald-200 via-amber-200 to-emerald-300 hover:from-emerald-100 hover:to-amber-100 shadow-[0_10px_40px_rgba(110,231,183,0.35)] transition-all duration-300 active:scale-[0.98]">
+          class="group relative inline-flex items-center justify-center gap-3 w-full sm:w-[36rem] px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold text-slate-950 bg-gradient-to-r from-emerald-200 via-amber-200 to-emerald-300 hover:from-emerald-100 hover:to-amber-100 shadow-[0_10px_40px_rgba(110,231,183,0.35)] transition-all duration-300 active:scale-[0.98]">
           <i class="fa-solid fa-book-open-reader text-slate-900 transition-transform group-hover:scale-110"></i>
           <span>物語を紡ぐ（ChatGPT用プロンプトを作成）</span>
         </button>
-        <div class="mt-4">
-          <button id="btn-open-cg" type="button"
-            class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold bg-white/5 hover:bg-white/10 text-emerald-200 border border-emerald-300/25 shadow-[0_10px_40px_rgba(0,0,0,0.25)] transition-all duration-300 active:scale-[0.98]">
-            <i class="fa-solid fa-comments"></i>
-            <span>物語なしで、曲作りプロンプトだけ作る</span>
-          </button>
-        </div>
+        <button id="btn-open-cg" type="button"
+          class="inline-flex items-center justify-center gap-3 w-full sm:w-[36rem] px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold bg-white/5 hover:bg-white/10 text-emerald-200 border border-emerald-300/25 shadow-[0_10px_40px_rgba(0,0,0,0.25)] transition-all duration-300 active:scale-[0.98]">
+          <i class="fa-solid fa-comments"></i>
+          <span>物語なしで、曲作りプロンプトだけ作る</span>
+        </button>
+        <button id="btn-open-cg-paste" type="button"
+          class="inline-flex items-center justify-center gap-3 w-full sm:w-[36rem] px-10 py-4 rounded-full font-serif text-base sm:text-lg font-semibold bg-amber-300/10 hover:bg-amber-300/20 text-amber-100 border border-amber-300/45 shadow-[0_10px_40px_rgba(0,0,0,0.25)] transition-all duration-300 active:scale-[0.98]">
+          <i class="fa-solid fa-paste"></i>
+          <span>物語を貼り付け曲作りプロンプトを作る</span>
+        </button>
       </div>
     </main>
 
@@ -619,7 +627,8 @@
           ChatGPT用 曲作りプロンプト
         </h2>
         <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl mx-auto leading-relaxed">
-          物語と設定を、ChatGPTにそのまま渡せる頼み方に整えます。できたプロンプトをコピーして、ChatGPTに貼ってください。
+          物語と設定を、ChatGPTにそのまま渡せる頼み方に整えます。できたプロンプトをコピーして、ChatGPTに貼ってください。<br />
+          <span class="text-amber-200/90">物語を貼り付けて参照</span>させることもできます。色っぽくしたいときは<span class="text-rose-200">破廉恥モード</span>をどうぞ。
         </p>
       </div>
 
@@ -638,8 +647,9 @@
             </label>
             <label class="cursor-pointer">
               <input type="radio" name="cg-story-source" value="paste" class="peer sr-only" />
-              <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-emerald-400/25 peer-checked:text-emerald-100 peer-checked:border-emerald-300/60 transition">
+              <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-amber-300/50 bg-amber-300/10 text-amber-100 peer-checked:bg-amber-300/25 peer-checked:text-amber-50 peer-checked:border-amber-300/70 transition">
                 <i class="fa-solid fa-paste"></i>物語を貼り付ける
+                <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-300/40 text-amber-50 font-bold tracking-wider">NEW</span>
               </span>
             </label>
             <label class="cursor-pointer">
@@ -672,8 +682,9 @@
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="cg-mode" value="shameless" class="peer sr-only" />
-            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-white/10 bg-white/5 text-slate-300 peer-checked:bg-rose-400/25 peer-checked:text-rose-100 peer-checked:border-rose-300/60 transition">
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-rose-300/50 bg-rose-400/10 text-rose-100 peer-checked:bg-rose-400/25 peer-checked:text-rose-50 peer-checked:border-rose-300/70 transition">
               <i class="fa-solid fa-fire"></i>破廉恥モード
+              <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-rose-400/40 text-rose-50 font-bold tracking-wider">NEW</span>
             </span>
           </label>
         </div>
@@ -839,6 +850,8 @@
       btnSavePreset: document.getElementById('btn-save-preset'),
       presetList: document.getElementById('preset-list'),
       btnOpenCg: document.getElementById('btn-open-cg'),
+      btnOpenCgPaste: document.getElementById('btn-open-cg-paste'),
+      btnQuickPaste: document.getElementById('btn-quick-paste'),
 
       chatgptSection: document.getElementById('chatgpt-section'),
       cgPasteWrap: document.getElementById('cg-paste-wrap'),
@@ -1601,11 +1614,24 @@ ${extraNotes || '特になし'}`;
       });
       // 曲作りのときは、左下の少女が魔法帽をかぶる
       const wearMagicHat = () => { if (els.girlImg) els.girlImg.src = 'apprentice_witch_hat.webp'; };
-      els.btnOpenCg.addEventListener('click', () => {
+      // V3: 参照する物語を指定して曲作りセクションを開く
+      const setCgStorySource = (source) => {
+        const radio = document.querySelector(`input[name="cg-story-source"][value="${source}"]`);
+        if (radio) radio.checked = true;
+        els.cgPasteWrap.classList.toggle('hidden', source !== 'paste');
+      };
+      const openCgSection = (source) => {
+        if (source) setCgStorySource(source);
         els.chatgptSection.classList.remove('hidden');
         wearMagicHat();
         els.chatgptSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
+        if (source === 'paste') {
+          setTimeout(() => { els.cgPasteStory.focus({ preventScroll: true }); }, 700);
+        }
+      };
+      els.btnOpenCg.addEventListener('click', () => openCgSection('none'));
+      els.btnOpenCgPaste.addEventListener('click', () => openCgSection('paste'));
+      els.btnQuickPaste.addEventListener('click', () => openCgSection('paste'));
       els.btnBuildCgPrompt.addEventListener('click', () => {
         const prompt = buildChatGptPrompt();
         if (prompt === null) {
