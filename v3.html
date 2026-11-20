@@ -144,7 +144,7 @@
 
   <!-- 物語を貼り付けて曲作りへ（右上に別枠で常駐） -->
   <button id="btn-quick-paste" type="button"
-    class="fixed top-3 right-3 sm:top-5 sm:right-6 z-20 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-amber-300 hover:bg-amber-200 text-slate-950 border-2 border-amber-100 shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition active:scale-95">
+    class="fixed top-20 right-3 sm:top-24 sm:right-6 z-20 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-amber-300 hover:bg-amber-200 text-slate-950 border-2 border-amber-100 shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition active:scale-95">
     <i class="fa-solid fa-paste"></i>
     <span>物語を貼り付けて曲作りへ</span>
     <span class="px-1.5 py-0.5 rounded-md bg-rose-500 text-white text-[10px] font-bold leading-none">NEW</span>
@@ -663,6 +663,13 @@
             </label>
           </div>
           <div id="cg-paste-wrap" class="hidden">
+            <div class="flex items-center justify-end mb-2">
+              <button id="btn-clear-paste" type="button"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-slate-300 border border-white/15 transition active:scale-95">
+                <i class="fa-solid fa-eraser"></i>
+                <span>内容をクリア</span>
+              </button>
+            </div>
             <textarea id="cg-paste-story" rows="8" placeholder="ここに物語の全文を貼り付けてください。このメーカーで作った物語でも、ほかの場所で作った物語でもOKです。"
               class="glass-input w-full rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 leading-relaxed"></textarea>
             <p class="text-xs text-slate-500 mt-2 leading-relaxed">貼り付けた物語だけを参照します。このメーカーの設定と、ここで生成した物語はプロンプトに入りません（キャンセルされます）。</p>
@@ -749,11 +756,18 @@
         <div id="cg-output-wrap" class="hidden">
           <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
             <span class="text-xs text-emerald-300 tracking-widest uppercase">Prompt for ChatGPT</span>
-            <button id="btn-copy-cg-prompt" type="button"
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border border-emerald-300/35 transition active:scale-95">
-              <i class="fa-regular fa-copy"></i>
-              <span>プロンプトをコピー</span>
-            </button>
+            <div class="flex items-center gap-2">
+              <button id="btn-clear-cg-prompt" type="button"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/15 transition active:scale-95">
+                <i class="fa-solid fa-eraser"></i>
+                <span>内容をクリア</span>
+              </button>
+              <button id="btn-copy-cg-prompt" type="button"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border border-emerald-300/35 transition active:scale-95">
+                <i class="fa-regular fa-copy"></i>
+                <span>プロンプトをコピー</span>
+              </button>
+            </div>
           </div>
           <textarea id="cg-prompt-output" rows="14" readonly
             class="glass-input w-full rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-100 leading-relaxed"></textarea>
@@ -865,6 +879,7 @@
       btnQuickPaste: document.getElementById('btn-quick-paste'),
 
       chatgptSection: document.getElementById('chatgpt-section'),
+      btnClearPaste: document.getElementById('btn-clear-paste'),
       cgPasteWrap: document.getElementById('cg-paste-wrap'),
       cgPasteStory: document.getElementById('cg-paste-story'),
       cgShamelessNote: document.getElementById('cg-shameless-note'),
@@ -880,6 +895,7 @@
       cgOutputWrap: document.getElementById('cg-output-wrap'),
       cgPromptOutput: document.getElementById('cg-prompt-output'),
       btnCopyCgPrompt: document.getElementById('btn-copy-cg-prompt'),
+      btnClearCgPrompt: document.getElementById('btn-clear-cg-prompt'),
 
       girlImg: document.getElementById('girl-img'),
       storyPromptSection: document.getElementById('story-prompt-section'),
@@ -1668,6 +1684,14 @@ ${extraNotes || '特になし'}`;
       els.btnCopyStoryPrompt.addEventListener('click', () => {
         if (!els.storyPromptOutput.value) return;
         copyTextToClipboard(els.storyPromptOutput.value, '物語作成プロンプトをコピーしました');
+      });
+      els.btnClearPaste.addEventListener('click', () => {
+        els.cgPasteStory.value = '';
+        showToast('貼り付けた物語をクリアしました');
+      });
+      els.btnClearCgPrompt.addEventListener('click', () => {
+        els.cgPromptOutput.value = '';
+        showToast('プロンプトをクリアしました');
       });
 
       // 自由な舞台追加
