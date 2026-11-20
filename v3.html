@@ -142,6 +142,14 @@
     <img id="girl-img" src="apprentice_witch.webp" alt="" class="w-[104px] sm:w-[148px] h-auto rounded-3xl border border-emerald-200/40 shadow-[0_10px_36px_rgba(0,0,0,0.5)]" />
   </div>
 
+  <!-- 物語を貼り付けて曲作りへ（右上に別枠で常駐） -->
+  <button id="btn-quick-paste" type="button"
+    class="fixed top-3 right-3 sm:top-5 sm:right-6 z-20 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-amber-300 hover:bg-amber-200 text-slate-950 border-2 border-amber-100 shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition active:scale-95">
+    <i class="fa-solid fa-paste"></i>
+    <span>物語を貼り付けて曲作りへ</span>
+    <span class="px-1.5 py-0.5 rounded-md bg-rose-500 text-white text-[10px] font-bold leading-none">NEW</span>
+  </button>
+
   <!-- トースト通知（alertの代替） -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -176,11 +184,6 @@
           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition active:scale-95">
           <i class="fa-solid fa-rotate-left"></i>
           <span>入力をクリア</span>
-        </button>
-        <button id="btn-quick-paste" type="button"
-          class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-medium bg-amber-300/10 hover:bg-amber-300/20 text-amber-200 border border-amber-300/40 transition active:scale-95">
-          <i class="fa-solid fa-paste"></i>
-          <span>物語を貼り付けて曲作りへ</span>
         </button>
       </div>
     </header>
