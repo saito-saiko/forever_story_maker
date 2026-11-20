@@ -631,7 +631,7 @@
         </h2>
         <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl mx-auto leading-relaxed">
           物語と設定を、ChatGPTにそのまま渡せる頼み方に整えます。できたプロンプトをコピーして、ChatGPTに貼ってください。<br />
-          <span class="text-amber-200/90">物語を貼り付けて参照</span>させることもできます。色っぽくしたいときは<span class="text-rose-200">破廉恥モード</span>をどうぞ。
+          <span class="text-amber-200/90">物語を貼り付けて参照</span>させることもできます。色っぽくしたいときは<span class="text-rose-200">破廉恥モード</span>、笑いたいときは<span class="text-orange-200">赤っ恥モード</span>をどうぞ。
         </p>
       </div>
 
@@ -690,8 +690,16 @@
               <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-rose-400/40 text-rose-50 font-bold tracking-wider">NEW</span>
             </span>
           </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="cg-mode" value="akappaji" class="peer sr-only" />
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm border border-orange-300/50 bg-orange-400/10 text-orange-100 peer-checked:bg-orange-400/25 peer-checked:text-orange-50 peer-checked:border-orange-300/70 transition">
+              <i class="fa-solid fa-face-grin-tears"></i>赤っ恥モード
+              <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-orange-400/40 text-orange-50 font-bold tracking-wider">NEW</span>
+            </span>
+          </label>
         </div>
         <p id="cg-shameless-note" class="hidden text-xs text-rose-200/80 leading-relaxed -mt-3 mb-5">破廉恥モード：なぜか歌詞も曲調も色っぽくなります。覚悟してどうぞ。</p>
+        <p id="cg-akappaji-note" class="hidden text-xs text-orange-200/80 leading-relaxed -mt-3 mb-5">赤っ恥モード：サビでコーラスが歌詞にツッコミを入れてきます。「きゃはずかしい」「だっせー」「若さゆえのあやまち」…ウザい合いの手に耐えてください。</p>
 
         <!-- こだわり入力欄 -->
         <div id="cg-custom-fields" class="hidden space-y-4 mb-5">
@@ -860,6 +868,7 @@
       cgPasteWrap: document.getElementById('cg-paste-wrap'),
       cgPasteStory: document.getElementById('cg-paste-story'),
       cgShamelessNote: document.getElementById('cg-shameless-note'),
+      cgAkappajiNote: document.getElementById('cg-akappaji-note'),
       cgCustomFields: document.getElementById('cg-custom-fields'),
       cgInstruments: document.getElementById('cg-instruments'),
       cgGenre: document.getElementById('cg-genre'),
@@ -1562,7 +1571,12 @@ ${extraNotes || '特になし'}`;
         }
       }
       lines.push('【音楽の方向性】');
-      if (mode === 'shameless') {
+      if (mode === 'akappaji') {
+        lines.push('- 赤っ恥モード指定：コーラス（合いの手）が歌詞にツッコミを入れてくるモードです。以下を必ず反映してください');
+        lines.push('- サビ（ChorusとFinal Chorus）では、各行の歌詞の内容に応じたツッコミの合いの手を、コーラス隊の掛け声として括弧書きで挿入すること。例：「きゃはずかしい」「だっせー」「若さゆえのあやまち」「なに言ってんの」「自分に酔ってる〜」「それ中二病」など、その行の内容に一番合うものを選んで入れること');
+        lines.push('- ツッコミは愛のあるウザさで。歌い手が本気でキメればキメるほど、コーラスのツッコミが冴えわたる構図にすること。ただし悪口や誹謗中傷ではなく、あくまで笑って許せる範囲のイジりにとどめること');
+        lines.push('- SUNO用Styleには、chorus shouts、call and response、playful heckling のような、掛け合いと合いの手の指定を必ず含めること');
+      } else if (mode === 'shameless') {
         lines.push('- 破廉恥モード指定：なぜか歌詞も曲調も色っぽくなるモードです。以下を必ず反映してください');
         lines.push('- 歌詞：官能的で色気のある言葉選びにすること。吐息、体温、指先、唇、視線、肌の距離感といったモチーフを艶っぽく使い、直接的すぎる表現ではなく、匂い立つような大人の色気で魅せること');
         lines.push('- 曲調：艶やかでムーディーな大人の雰囲気。スローからミドルテンポで、囁くような歌い回しと、息づかいまで聞こえる距離感を意識すること');
@@ -1607,6 +1621,7 @@ ${extraNotes || '特になし'}`;
         radio.addEventListener('change', () => {
           els.cgCustomFields.classList.toggle('hidden', currentCgMode() !== 'custom');
           els.cgShamelessNote.classList.toggle('hidden', currentCgMode() !== 'shameless');
+          els.cgAkappajiNote.classList.toggle('hidden', currentCgMode() !== 'akappaji');
         });
       });
       // V3: 参照する物語の切替（貼り付け欄の表示）
